@@ -1,7 +1,10 @@
 import styled from 'styled-components';
 
 export const Div = styled.div`
-  flex: 0 1 650px; 
+  flex: 0 1 650px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 
   h1 {
     color: #001858;
@@ -9,8 +12,8 @@ export const Div = styled.div`
     font-weight: 800;
     margin-bottom: 24px;
     line-height: 1.1;
-    margin-top: -200px;
-    letter-spacing: 0.5px; 
+    letter-spacing: 0.5px;
+    /* REMOVIDO: margin-top: -200px; (Isso causava o bug de sobreposição) */
   }
 
   p {
@@ -18,31 +21,76 @@ export const Div = styled.div`
     width: 100%;
     max-width: 600px; 
     font-size: 20px;
-    margin-bottom: 48px;
-    line-height: 1.6; 
-    letter-spacing: 0.2px; 
+    margin-bottom: 40px;
+    line-height: 1.5; 
+  }
+`;
+
+export const WelcomeBadge = styled.span`
+  background-color: #536791;
+  color: white;
+  padding: 6px 14px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  width: fit-content;
+  margin-bottom: 15px; /* Garante espaço entre o badge e o título */
+  display: inline-block;
+`;
+
+// Mantenha os outros estilos (ButtonRow, Button, LegendGrid...) como estão.
+
+export const MarkerBadge = styled.div`
+  background: #FF6600;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: bold;
+  flex-shrink: 0;
+`;
+
+export const ButtonRow = styled.div`
+  display: flex;
+  gap: 20px;
+  margin-top: 35px;
+`;
+
+export const Button = styled.button`
+  padding: 14px 45px;
+  border-radius: 6px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  color: white;
+  background-color: ${props => props.variant === 'orange' ? '#FF6B00' : '#001858'};
+  transition: all 0.2s ease;
+
+  &:hover {
+    filter: brightness(1.1);
+    transform: translateY(-2px);
   }
 `;
 
 export const LegendGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 30px;
+  gap: 25px;
 `;
 
 export const LegendItem = styled.div`
   display: flex;
   align-items: flex-start;
-  gap: 14px;
+  gap: 12px;
   padding-left: 15px;
   border-left: 4px solid ${props => props.borderColor || '#eee'};
 
   span {
-    font-size: 16px; 
-    max-width: 300px;
+    font-size: 15px; 
+    max-width: 280px;
     color: #555; 
     line-height: 1.4;
-    font-weight: 500; 
   }
 `;
 

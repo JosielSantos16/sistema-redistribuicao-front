@@ -5,11 +5,18 @@ export const MapContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  position: relative;
+`;
+
+export const MapContent = styled.div`
+  position: relative; 
+  width: 100%;
+  max-width: 750px; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
   svg {
     width: 100%;
-    max-width: 750px;
     height: auto;
     filter: drop-shadow(0px 20px 40px rgba(0, 24, 88, 0.12));
 
