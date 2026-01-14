@@ -61,7 +61,7 @@ export const LegendBadge = styled.div`
   color: white;
   width: 22px;
   height: 22px;
-  border-radius: 50%; /* Garante que é redondo */
+  border-radius: 50%; 
   display: flex;
   align-items: center;
   justify-content: center;
@@ -79,8 +79,8 @@ export const MapContainer = styled.div`
     height: auto;
     
     path {
-      fill: #001858; /* COR AZUL DO MAPA */
-      stroke: #ffffff; /* LINHAS BRANCAS */
+      fill: #001858; 
+      stroke: #ffffff; 
       stroke-width: 0.5;
     }
   }
@@ -103,7 +103,6 @@ export const Marker = styled.div`
   top: ${props => props.y};
 `;
 
-// --- CARDS DO RODAPÉ ---
 export const StatsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(4, 1fr);

@@ -13,7 +13,6 @@ export const Div = styled.div`
     margin-bottom: 24px;
     line-height: 1.1;
     letter-spacing: 0.5px;
-    /* REMOVIDO: margin-top: -200px; (Isso causava o bug de sobreposição) */
   }
 
   p {
@@ -34,11 +33,9 @@ export const WelcomeBadge = styled.span`
   font-size: 14px;
   font-weight: 600;
   width: fit-content;
-  margin-bottom: 15px; /* Garante espaço entre o badge e o título */
+  margin-bottom: 15px; 
   display: inline-block;
 `;
-
-// Mantenha os outros estilos (ButtonRow, Button, LegendGrid...) como estão.
 
 export const MarkerBadge = styled.div`
   background: #FF6600;
