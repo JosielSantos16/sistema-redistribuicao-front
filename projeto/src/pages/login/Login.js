@@ -1,11 +1,10 @@
 import { useState } from 'react';
+import { useNavigate } from "react-router-dom";
 import { Mail, Lock } from 'lucide-react';
-import Logo from '../../assets/logo.png';
+import Logo from '../../components/logo/Logo';
 import {
   LoginWrapper,
   LoginCard,
-  LogoSection,
-  LogoSistema,
   Title,
   Subtitle,
   TabContainer,
@@ -20,15 +19,13 @@ import {
 } from './styles';
 
 export default function Login() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('usuario');
 
   return (
     <LoginWrapper>
       <LoginCard>
-        <LogoSection>
-          <LogoSistema src={Logo} alt="Logo" />
-        </LogoSection>
-
+        <Logo/>
         <Title>Login</Title>
         <Subtitle>Acesse o sistema de Redistribuição</Subtitle>
 
@@ -60,13 +57,13 @@ export default function Login() {
 
           <ForgotPassword href="#">Esqueceu sua senha?</ForgotPassword>
 
-          <LoginButton>
+          <LoginButton onClick={() => navigate("/finalizar-cadastro")}>
             Entrar como {activeTab === 'usuario' ? 'Usuário' : 'Administrador'}
           </LoginButton>
         </Form>
 
         <FooterText>
-          Não tem conta? <a href="#">Cadastrar-se</a>
+          Não tem conta? <a href="/cadastro">Cadastrar-se</a>
         </FooterText>
       </LoginCard>
     </LoginWrapper>

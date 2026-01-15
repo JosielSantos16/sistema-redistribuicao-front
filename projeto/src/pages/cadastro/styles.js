@@ -19,22 +19,6 @@ export const RegisterCard = styled.div`
   text-align: center;
 `;
 
-export const LogoSection = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 110px; 
-  margin-bottom: 10px; 
-`;
-
-export const LogoSistema = styled.img`
-  width: auto;
-  max-width: 220px;
-  height: auto;
-  max-height: 100%;
-  object-fit: contain;
-`;
-
 export const Title = styled.h1`
   color: #001858;
   font-size: 24px;

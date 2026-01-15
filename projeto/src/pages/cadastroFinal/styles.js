@@ -1,20 +1,20 @@
 import styled from 'styled-components';
 
-export const LoginWrapper = styled.div`
+export const FinalizeWrapper = styled.div`
   min-height: 100vh;
   width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #f5faff; 
+  background-color: #f5faff;
 `;
 
-export const LoginCard = styled.div`
+export const FinalizeCard = styled.div`
   background: white;
   width: 100%;
   max-width: 450px;
-  padding: 25px 40px 40px 40px; 
-  border-radius: 25px;
+  padding: 50px 40px;
+  border-radius: 30px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.03);
   text-align: center;
 `;
@@ -28,32 +28,8 @@ export const Title = styled.h1`
 
 export const Subtitle = styled.p`
   color: #666;
-  font-size: 16px;
-  margin-bottom: 20px; 
-`;
-
-export const TabContainer = styled.div`
-  display: flex;
-  border: 1px solid #eee;
-  border-radius: 8px;
-  margin-bottom: 25px;
-  overflow: hidden;
-`;
-
-export const Tab = styled.button`
-  flex: 1;
-  padding: 12px;
   font-size: 14px;
-  border: none;
-  background: ${props => props.active ? '#eef2f6' : 'white'};
-  color: ${props => props.active ? '#001858' : '#888'};
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-
-  &:first-child {
-    border-right: 1px solid #eee;
-  }
+  margin-bottom: 35px;
 `;
 
 export const Form = styled.form`
@@ -89,48 +65,19 @@ export const Input = styled.input`
   }
 `;
 
-export const ForgotPassword = styled.a`
-  text-align: left;
-  font-size: 13px;
-  color: #001858;
-  text-decoration: none;
-  font-weight: 600;
-  margin-top: -5px;
-
-  &:hover {
-    text-decoration: underline;
-  }
-`;
-
-export const LoginButton = styled.button`
+export const ConfirmButton = styled.button`
   background-color: #001858;
   color: white;
-  padding: 15px;
+  padding: 16px;
   border: none;
   border-radius: 8px;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  margin-top: 10px;
+  margin-top: 15px;
   transition: background 0.2s;
 
   &:hover {
     background-color: #00103a;
-  }
-`;
-
-export const FooterText = styled.p`
-  margin-top: 25px;
-  font-size: 14px;
-  color: #666;
-
-  a {
-    color: #001858;
-    text-decoration: none;
-    font-weight: 700;
-
-    &:hover {
-      text-decoration: underline;
-    }
   }
 `;

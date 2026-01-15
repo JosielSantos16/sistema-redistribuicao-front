@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import { useNavigate } from "react-router-dom";
 import { User, IdCard, Mail, Calendar } from 'lucide-react';
-import Logo from '../../assets/logo.png';
+import Logo from '../../components/logo/Logo';
 import {
   RegisterWrapper,
   RegisterCard,
@@ -18,14 +19,13 @@ import {
 } from './styles';
 
 export default function Cadastro() {
+  const navigate = useNavigate();
   const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   return (
     <RegisterWrapper>
       <RegisterCard>
-        <LogoSection>
-          <LogoSistema src={Logo} alt="Logo" />
-        </LogoSection>
+        <Logo/>
 
         <Title>Cadastro</Title>
         <Subtitle>Cadastre-se para acessar o sistema de redistribuição</Subtitle>
@@ -63,7 +63,7 @@ export default function Cadastro() {
             </label>
           </CheckboxGroup>
 
-          <RegisterButton type="submit">
+          <RegisterButton type="submit" onClick={() => navigate("/finalizar-cadastro")}>
             Cadastrar
           </RegisterButton>
         </Form>
