@@ -5,6 +5,7 @@ export const Div = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
+  margin-top: -100px;
 
   h1 {
     color: #001858;

@@ -5,8 +5,6 @@ import Logo from '../../components/logo/Logo';
 import {
   RegisterWrapper,
   RegisterCard,
-  LogoSection,
-  LogoSistema,
   Title,
   Subtitle,
   Form,

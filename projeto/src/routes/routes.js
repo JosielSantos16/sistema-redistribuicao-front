@@ -5,6 +5,8 @@ import Login from "../pages/login/Login";
 import Cadastro from "../pages/cadastro/Cadastro";
 import CadastroFinal from "../pages/cadastroFinal/cadastroFinal";
 import CompletarPerfil from "../pages/completarPerfil/CompletarPerfil";
+import BuscaPerfis from "../pages/buscaPerfis/BuscaPerfis";
+import Editais from "../pages/editais/Editais";
 
 function AppRoutes() {
   return (
@@ -16,6 +18,8 @@ function AppRoutes() {
         <Route path="/finalizar-cadastro" element={<CadastroFinal />} />
         <Route path="/completar-perfil" element={<CompletarPerfil />} />
         <Route path="/mapa" element={<Mapa />} />
+        <Route path="/busca" element={<BuscaPerfis />} />
+        <Route path="/editais" element={<Editais />} />
       </Routes>
     </Router>
   );

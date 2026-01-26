@@ -9,6 +9,8 @@ export const Container = styled.aside`
   padding: 70px 0 0 0; 
   height: 100vh; 
   box-sizing: border-box;
+  position: sticky;
+  top: 0;
 `;
 
 export const UserProfile = styled.div`
@@ -23,6 +25,7 @@ export const UserProfile = styled.div`
     border-radius: 50%;
     border: 3px solid #fff;
     margin-bottom: 12px;
+    object-fit: cover;
   }
 
   span {
@@ -34,23 +37,24 @@ export const UserProfile = styled.div`
 export const NavItem = styled.div`
   display: flex;
   align-items: center;
-  padding: 12px 15px; 
+  padding: 12px 20px; 
   font-size: 13px;
   cursor: pointer;
   transition: 0.2s;
-  margin: 4px 12px;    
-  border-radius: 6px;   
-  
+  margin: 4px 15px;    
+  border-radius: 8px;   
   background-color: ${props => props.active ? '#FF6600' : 'transparent'};
-  color: white;
+  color: ${props => props.active ? '#fff' : '#cbd5e0'};
 
   svg {
     margin-right: 12px;
     width: 18px;
+    height: 18px;
   }
 
   &:hover {
-    background-color: ${props => props.active ? '#FF6600' : 'rgba(255,255,255,0.05)'};
+    background-color: ${props => props.active ? '#FF6600' : 'rgba(255,255,255,0.1)'};
+    color: #fff;
   }
 `;
 
@@ -60,12 +64,13 @@ export const LogoutArea = styled.div`
   border-top: 1px solid rgba(255,255,255,0.1);
   display: flex;
   align-items: center;
-  font-size: 13px;
+  font-size: 14px;
   cursor: pointer;
   color: white; 
 
   svg { 
     margin-right: 15px; 
+    width: 18px;
   }
 
   &:hover {
