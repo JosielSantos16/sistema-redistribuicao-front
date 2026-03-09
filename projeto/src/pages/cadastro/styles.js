@@ -41,30 +41,49 @@ export const Form = styled.form`
 export const InputGroup = styled.div`
   position: relative;
   display: flex;
-  align-items: center;
+  flex-direction: column; 
+  align-items: flex-start;
+  width: 100%;
 `;
 
-export const IconWrapper = styled.div`
-  position: absolute;
-  left: 15px;
-  color: #333;
+export const InputWrapper = styled.div`
+  position: relative;
   display: flex;
   align-items: center;
+  width: 100%;
 `;
 
 export const Input = styled.input`
   width: 100%;
   height: 50px;
   padding: 12px 12px 12px 45px;
-  border: 1px solid #ddd;
+  border: 1px solid ${props => props.hasError ? '#e74c3c' : '#ddd'};
   border-radius: 8px;
   font-size: 14px;
   outline: none;
-  transition: border-color 0.2s;
+  transition: all 0.2s;
 
   &:focus {
-    border-color: #001858;
+    border-color: ${props => props.hasError ? '#e74c3c' : '#001858'};
+    box-shadow: ${props => props.hasError ? '0 0 0 1px #e74c3c' : 'none'};
   }
+`;
+
+export const ErrorMessage = styled.span`
+  color: #e74c3c;
+  font-size: 12px;
+  margin-top: 4px;
+  margin-left: 2px;
+  font-weight: 500;
+`;
+
+export const IconWrapper = styled.div`
+  position: absolute;
+  left: 15px;
+  color: ${props => props.hasError ? '#e74c3c' : '#333'};
+  display: flex;
+  align-items: center;
+  z-index: 1;
 `;
 
 export const CheckboxGroup = styled.div`

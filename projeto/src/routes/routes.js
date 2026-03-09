@@ -7,6 +7,7 @@ import CadastroFinal from "../pages/cadastroFinal/cadastroFinal";
 import CompletarPerfil from "../pages/completarPerfil/CompletarPerfil";
 import BuscaPerfis from "../pages/buscaPerfis/BuscaPerfis";
 import Editais from "../pages/editais/Editais";
+import Perfil from "../pages/perfil/Perfil";
 
 function AppRoutes() {
   return (
@@ -20,6 +21,7 @@ function AppRoutes() {
         <Route path="/mapa" element={<Mapa />} />
         <Route path="/busca" element={<BuscaPerfis />} />
         <Route path="/editais" element={<Editais />} />
+        <Route path="/perfil" element={<Perfil />} />
       </Routes>
     </Router>
   );

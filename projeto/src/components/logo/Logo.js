@@ -9,7 +9,7 @@ export const LogoSection = styled.div`
 `;
 
 export const LogoSistema = styled.img`
-  height: ${props => props.height || '80px'}; 
+  height: ${props => props.height || '50px'}; 
   width: auto;
   object-fit: contain;
 `;
