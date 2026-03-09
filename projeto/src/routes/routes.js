@@ -3,7 +3,7 @@ import Home from "../pages/home/Home";
 import Mapa from "../pages/mapa/Mapa";
 import Login from "../pages/login/Login";
 import Cadastro from "../pages/cadastro/Cadastro";
-import CadastroFinal from "../pages/cadastroFinal/cadastroFinal";
+import CadastroFinal from "../pages/cadastroFinal/CadastroFinal";
 import CompletarPerfil from "../pages/completarPerfil/CompletarPerfil";
 import BuscaPerfis from "../pages/buscaPerfis/BuscaPerfis";
 import Editais from "../pages/editais/Editais";

@@ -75,6 +75,9 @@ export const ErrorMessage = styled.span`
   margin-top: 4px;
   margin-left: 2px;
   font-weight: 500;
+  display: block;      
+  text-align: left;   
+  width: 100%;        
 `;
 
 export const IconWrapper = styled.div`
@@ -140,5 +143,17 @@ export const FooterText = styled.p`
     &:hover {
       text-decoration: underline;
     }
+  }
+`;
+
+export const DatePickerWrapper = styled.div`
+  width: 100%;
+
+  .react-datepicker-wrapper {
+    width: 100%;
+  }
+
+  .react-datepicker__input-container {
+    width: 100%;
   }
 `;
