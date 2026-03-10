@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; 
+import api from '../../services/api';
 import Stepper from '../../components/perfil/stepper/Stepper';
 import Form1 from '../../components/perfil/form/form1/Form1';
 import Form2 from '../../components/perfil/form/form2/Form2';
@@ -15,14 +16,35 @@ import {
 } from './styles';
 
 export default function CompletarPerfil() {
-  const [step, setStep] = useState(1); 
+  const [step, setStep] = useState(1);
+  
+  const [formData, setFormData] = useState({
+    lattes: '',
+    instituicao: '',
+    departamento: '',
+    curso: '',
+    cargo: '',
+    preferencias: []
+  });
+
   const navigate = useNavigate(); 
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (step < 2) {
       setStep(step + 1);
     } else {
-      navigate('/mapa'); 
+      try {
+       
+        const token = localStorage.getItem('@Wolf:token');
+        
+        await api.put('/profile', formData, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        navigate('/mapa');
+      } catch (err) {
+        alert("Erro ao salvar perfil. Verifique os dados.");
+      }
     }
   };
 
@@ -34,7 +56,7 @@ export default function CompletarPerfil() {
     <ProfileWrapper>
       <ProfileCard>
         <LeftSide>
-          <Logo height={100}/>
+          <Logo height={50}/>
         </LeftSide>
 
         <RightSide>
@@ -43,7 +65,9 @@ export default function CompletarPerfil() {
           </Header>
           <Stepper activeStep={step}/>
 
-          {step === 1 ? <Form1/> : <Form2/>}
+          {step === 1 
+          ? <Form1 data={formData} setData={setFormData} />
+          : <Form2 data={formData} setData={setFormData}/>}
 
           <Footer>
             {step > 1 && (

@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { keyframes } from 'styled-components';
 
 export const FinalizeWrapper = styled.div`
   min-height: 100vh;
@@ -65,6 +66,11 @@ export const Input = styled.input`
   }
 `;
 
+const rotate = keyframes`
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+`;
+
 export const ConfirmButton = styled.button`
   background-color: #001858;
   color: white;
@@ -76,8 +82,38 @@ export const ConfirmButton = styled.button`
   cursor: pointer;
   margin-top: 15px;
   transition: background 0.2s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .animate-spin {
+    animation: ${rotate} 1s linear infinite;
+  }
+  
+  &:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
 
   &:hover {
     background-color: #00103a;
+  }
+`;
+
+export const ErrorMessage = styled.div`
+  background-color: #fff1f0;
+  border: 1px solid #ffa39e;
+  color: #f5222d;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  text-align: left;
+
+  svg {
+    flex-shrink: 0;
   }
 `;

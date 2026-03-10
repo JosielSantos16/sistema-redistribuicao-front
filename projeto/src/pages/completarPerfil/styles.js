@@ -21,13 +21,14 @@ export const ProfileCard = styled.div`
 
 export const LeftSide = styled.div`
   display: flex;
-  margin-top: 20px;
+  padding-top: 40px;   
+  margin-left : 20px;
   align-items: flex-start;
 `;
 
 export const RightSide = styled.div`
   flex: 1;
-  padding: 40px 60px;
+  padding: 40px 30px;
   display: flex;
   flex-direction: column;
 `;

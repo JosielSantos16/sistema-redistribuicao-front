@@ -122,7 +122,7 @@ export default function Cadastro() {
         data_nascimento: dataNascimento,
       });
 
-      navigate("/finalizar-cadastro");
+      navigate("/verificar-email", { state: { email } });
     } catch (err) {
       if (err instanceof Yup.ValidationError) {
         const validationErrors = {};
