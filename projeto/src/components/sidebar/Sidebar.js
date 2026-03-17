@@ -18,8 +18,8 @@ export default function Sidebar() {
     { name: "Editais", icon: <FileText />, path: "/editais" },
     { name: "Perfil", icon: <User />, path: "/perfil" },
     { name: "Notificações", icon: <Bell />, path: "/notificacoes" },
-    { name: "Seja parceiro", icon: <Users />, path: "/parceiro" },
-    { name: "Ajuda e suporte", icon: <HelpCircle />, path: "/ajuda" },
+    { name: "Seja parceiro", icon: <Users />, path: "/seja-parceiro" },
+    { name: "Ajuda e suporte", icon: <HelpCircle />, path: "/suporte" },
     { name: "Políticas e Regulamentos", icon: <Shield />, path: "/politicas" },
     { name: "Configurações", icon: <Settings />, path: "/configuracoes" },
   ];

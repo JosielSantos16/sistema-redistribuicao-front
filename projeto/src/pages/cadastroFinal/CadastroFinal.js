@@ -65,7 +65,7 @@ export default function CadastroFinal() {
       const { token: jwtToken } = response.data;
       localStorage.setItem("@Wolf:token", jwtToken);
 
-      navigate("/completar-perfil");
+      navigate(`/completar-perfil?token=${token}`);
     } catch (err) {
       setError(
         err.response?.data?.error || "Erro ao ativar conta. Tente novamente.",

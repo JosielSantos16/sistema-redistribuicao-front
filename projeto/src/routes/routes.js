@@ -9,6 +9,11 @@ import Mapa from "../pages/mapa/Mapa";
 import BuscaPerfis from "../pages/buscaPerfis/BuscaPerfis";
 import Editais from "../pages/editais/Editais";
 import Perfil from "../pages/perfil/Perfil";
+import Parceiros from "../pages/parceiros/Parceiros";
+import AjudaSuporte from "../pages/ajudaSuporte/AjudaSuporte";
+import Politicas from "../components/politicas/Politicas";
+import Configuracoes from "../pages/configuracoes/Configuracoes";
+import Notificacoes from "../pages/notificacoes/Notificacoes";
 
 const PrivateRoute = ({ children }) => {
   const token = localStorage.getItem('@Wolf:token');
@@ -25,6 +30,11 @@ function AppRoutes() {
         <Route path="/verificar-email" element={<VerificarEmail />} />
         <Route path="/finalizar-cadastro" element={<CadastroFinal />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/seja-parceiro" element={<Parceiros />} />
+        <Route path="/notificacoes" element={<Notificacoes />} /> 
+        <Route path="/suporte" element={<AjudaSuporte />} />
+        <Route path="/politicas" element={<Politicas />} />
+        <Route path="/configuracoes" element={<Configuracoes />} />
 
         <Route path="/completar-perfil" element={
           <PrivateRoute> <CompletarPerfil /> </PrivateRoute>
