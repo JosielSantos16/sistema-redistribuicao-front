@@ -29,24 +29,32 @@ export default function CompletarPerfil() {
 
   const navigate = useNavigate(); 
 
-  const handleNext = async () => {
-    if (step < 2) {
-      setStep(step + 1);
-    } else {
-      try {
-       
-        const token = localStorage.getItem('@Wolf:token');
-        
-        await api.put('/profile', formData, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+const handleNext = async () => {
+  if (step < 2) {
+    setStep(step + 1);
+  } else {
+    try {
+      // Feedback visual
+      const btn = document.querySelector('.next-btn');
+      btn.innerText = "Salvando...";
+      btn.disabled = true;
 
-        navigate('/mapa');
-      } catch (err) {
-        alert("Erro ao salvar perfil. Verifique os dados.");
-      }
+      const token = localStorage.getItem('@Wolf:token');
+      
+      await api.put('/profile', formData, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      alert("Perfil atualizado com sucesso!");
+      navigate('/mapa'); // Mudei para dashboard que é a tela principal
+    } catch (err) {
+      alert("Erro ao salvar perfil. Verifique sua conexão com o servidor na porta 3001.");
+      const btn = document.querySelector('.next-btn');
+      btn.innerText = "Finalizar";
+      btn.disabled = false;
     }
-  };
+  }
+};
 
   const handleBack = () => {
     if (step > 1) setStep(step - 1);

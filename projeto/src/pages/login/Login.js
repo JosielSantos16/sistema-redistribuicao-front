@@ -27,32 +27,43 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e) => {
-  e.preventDefault();
-  setLoading(true);
+    e.preventDefault();
+    setLoading(true);
 
-  try {
-    const response = await axios.post('http://localhost:3333/sessions', {
-      email: email, 
-      password: senha, 
-    });
+    try {
+      const response = await axios.post('http://localhost:3001/sessions', {
+        email: email, 
+        password: senha, 
+      });
 
-    const { token, user } = response.data;
+      const { token, user } = response.data;
 
-    localStorage.setItem('@Wolf:token', token);
-    localStorage.setItem('@Wolf:user', JSON.stringify(user));
+      if (activeTab === "admin" && !user.admin) {
+        alert("Acesso negado. Este usuário não possui privilégios de administrador.");
+        setLoading(false);
+        return;
+      }
 
-    axios.defaults.headers.Authorization = `Bearer ${token}`;
+      localStorage.setItem('@Wolf:token', token);
+      localStorage.setItem('@Wolf:user', JSON.stringify(user));
 
-    alert(`Bem-vindo, ${user.name}!`);
-    navigate("/dashboard"); 
+      axios.defaults.headers.Authorization = `Bearer ${token}`;
 
-  } catch (err) {
-    const errorMsg = err.response?.data?.error || "Erro no servidor";
-    alert(errorMsg);
-  } finally {
-    setLoading(false);
-  }
-};
+      alert(`Bem-vindo, ${user.name}!`);
+      
+      if (user.admin) {
+        navigate("/admin-dashboard");
+      } else {
+        navigate("/mapa"); 
+      }
+
+    } catch (err) {
+      const errorMsg = err.response?.data?.error || "Erro ao conectar com o servidor (Porta 3001)";
+      alert(errorMsg);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <LoginWrapper>

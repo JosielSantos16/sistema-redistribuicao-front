@@ -1,44 +1,64 @@
-import { useState } from "react";
-import axios from "axios";
-import AsyncSelect from "react-select/async"; 
+import React from "react";
+import AsyncCreatableSelect from "react-select/async-creatable";
 import { PlusCircle } from "lucide-react";
-import {
-  FormSection,
-  FormGrid,
-  GridItem,
-  Input,
-  AddButton,
-} from "./styles";
+import { FormSection, FormGrid, GridItem, Input, AddButton } from "./styles";
+
+import listaUniversidadesJSON from "../../../../data/universidades-br.json";
 
 export default function Form1({ data, setData }) {
-  
-  const loadInstituicoes = async (inputValue) => {
-    if (inputValue.length < 3) return []; 
+  console.log("Arquivo JSON carregado?", !!listaUniversidadesJSON);
+  if (listaUniversidadesJSON) {
+    console.log("Total de itens:", listaUniversidadesJSON.length);
+  }
 
-    try {
-      const response = await axios.get(
-        `https://brasilapi.com.br/api/relatorios/v1/ies`
-      );
+  const loadInstituicoes = (inputValue) => {
+    return new Promise((resolve) => {
+      if (!listaUniversidadesJSON || !Array.isArray(listaUniversidadesJSON)) {
+        console.error("Erro: listaUniversidadesJSON não é um array válido.");
+        return resolve([]);
+      }
 
-      const filtered = response.data
-        .filter((inst) =>
-          inst.nome.toLowerCase().includes(inputValue.toLowerCase())
-        )
-        .map((inst) => ({
-          value: inst.nome,
-          label: inst.nome,
-        }))
-        .slice(0, 50); 
+      if (!inputValue) {
+        const iniciais = listaUniversidadesJSON.slice(0, 10).map((u) => ({
+          value: u.universidade,
+          label: u.sigla ? `${u.sigla} - ${u.universidade}` : u.universidade,
+        }));
+        return resolve(iniciais);
+      }
 
-      return filtered;
-    } catch (err) {
-      console.error("Erro ao buscar instituições", err);
-      return [];
-    }
+      const buscaInput = inputValue.toLowerCase().trim();
+
+      const filtradas = listaUniversidadesJSON.filter((u) => {
+        const nomeUni = String(u.universidade || "").toLowerCase();
+        const siglaUni = String(u.sigla || "").toLowerCase();
+
+        return nomeUni.includes(buscaInput) || siglaUni.includes(buscaInput);
+      });
+
+      const final = filtradas.slice(0, 50).map((u) => ({
+        value: u.universidade,
+        label: u.sigla ? `${u.sigla} - ${u.universidade}` : u.universidade,
+      }));
+
+      resolve(final);
+    });
   };
 
-  const handleSelectChange = (selectedOption, actionMeta) => {
-    setData((prev) => ({ ...prev, [actionMeta.name]: selectedOption.value }));
+  const loadCursos = (inputValue) => {
+    return new Promise((resolve) => {
+      const cursos = [
+        "Sistemas de Informação",
+        "Direito",
+        "Administração",
+        "Medicina",
+      ];
+      if (!inputValue)
+        return resolve(cursos.map((c) => ({ value: c, label: c })));
+      const filtrados = cursos.filter((c) =>
+        c.toLowerCase().includes(inputValue.toLowerCase()),
+      );
+      resolve(filtrados.map((c) => ({ value: c, label: c })));
+    });
   };
 
   const handleChange = (e) => {
@@ -46,73 +66,75 @@ export default function Form1({ data, setData }) {
     setData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const customStyles = {
-    control: (provided) => ({
-      ...provided,
-      height: "45px",
-      borderRadius: "8px",
-      border: "1px solid #ddd",
-      boxShadow: "none",
-      "&:hover": { border: "1px solid #bbb" },
-    }),
-  };
-
   return (
     <FormSection>
       <h3>Dados Acadêmicos</h3>
       <p>
-        Essas informações serão usadas apenas para validar sua identidade e
-        facilitar o contato
+        Essas informações serão usadas para validar sua identidade e facilitar o
+        contato
       </p>
-
       <FormGrid>
         <GridItem className="lattes">
           <Input
             name="lattes"
-            type="text"
-            placeholder="http://lattes.cnpq.br/..."
-            value={data.lattes}
+            placeholder="http://lattes.cnpq.br/.."
+            value={data.lattes || ""}
             onChange={handleChange}
           />
         </GridItem>
 
         <GridItem className="instituicao">
-          {/* Agora é um Input manual, sem AsyncSelect */}
-          <Input
-            name="instituicao"
-            type="text"
-            placeholder="Nome da Instituição (Ex: UFOPA)"
-            value={data.instituicao}
-            onChange={handleChange}
+          <AsyncCreatableSelect
+            cacheOptions
+            defaultOptions
+            loadOptions={loadInstituicoes}
+            value={
+              data.instituicao
+                ? { label: data.instituicao, value: data.instituicao }
+                : null
+            }
+            onChange={(opt) =>
+              setData((prev) => ({ ...prev, instituicao: opt?.value || "" }))
+            }
+            placeholder="Instituição (Ex: UFOPA)"
+            formatCreateLabel={(val) => `Usar "${val}"`}
+            noOptionsMessage={() => "Nenhuma instituição encontrada"}
+            isClearable
           />
         </GridItem>
 
         <GridItem className="departamento">
           <Input
             name="departamento"
-            type="text"
-            placeholder="Departamento / Unidade"
-            value={data.departamento}
+            placeholder="Departamento"
+            value={data.departamento || ""}
             onChange={handleChange}
           />
         </GridItem>
 
         <GridItem className="curso">
-          <Input
-            name="curso"
-            type="text"
-            placeholder="Curso / Área"
-            value={data.curso}
-            onChange={handleChange}
+          <AsyncCreatableSelect
+            cacheOptions
+            defaultOptions
+            loadOptions={loadCursos}
+            value={data.curso ? { label: data.curso, value: data.curso } : null}
+            onChange={(opt) =>
+              setData((prev) => ({ ...prev, curso: opt?.value || "" }))
+            }
+            placeholder="Curso/Area"
+            isClearable
           />
         </GridItem>
 
         <GridItem className="cargo">
           <select 
             name="cargo" 
-            value={data.cargo} 
+            value={data.cargo || ""} 
             onChange={handleChange}
-            style={{ width: '100%', height: '45px', borderRadius: '8px', border: '1px solid #ddd', padding: '0 10px' }}
+            style={{ 
+                width: '100%', height: '45px', borderRadius: '8px', 
+                border: '1px solid #e2e8f0', padding: '0 10px', background: '#fff'
+            }}
           >
             <option value="" disabled>Cargo/Função</option>
             <option value="Magistério Superior">Magistério Superior</option>
@@ -123,8 +145,7 @@ export default function Form1({ data, setData }) {
         <GridItem className="preferencias">
           <Input
             name="preferencias_input"
-            type="text"
-            placeholder="Locais de Preferências"
+            placeholder="Locais de Preferência"
           />
         </GridItem>
       </FormGrid>
@@ -133,6 +154,7 @@ export default function Form1({ data, setData }) {
         <PlusCircle size={18} />
         Adicione Local
       </AddButton>
+
     </FormSection>
   );
 }
