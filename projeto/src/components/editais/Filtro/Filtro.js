@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, X, RotateCcw } from "lucide-react";
+import dadosEstados from "../../../data/estados.json";
+
 import {
   FilterBar,
   FilterGrid,
@@ -33,12 +35,20 @@ const TAG_COLORS = {
   DEFAULT: "#ff6b00",
 };
 
-export default function Filtro({ onSearch }) {
+export default function Filtro({ onSearch, initialUf }) {
   const getTagColor = (tagName) => TAG_COLORS[tagName] || TAG_COLORS.DEFAULT;
   const [inputValue, setInputValue] = useState("");
   const [selectedTags, setSelectedTags] = useState([]);
   const [suggestions, setSuggestions] = useState([]);
+  const [isLocked, setIsLocked] = useState(false);
   const [uf, setUf] = useState("");
+
+  useEffect(() => {
+    if (initialUf) {
+      setUf(initialUf);
+      setIsLocked(true);
+    }
+  }, [initialUf]);
 
   const handleInputChange = (e) => {
     const val = e.target.value;
@@ -66,6 +76,7 @@ export default function Filtro({ onSearch }) {
     setSelectedTags([]);
     setSuggestions([]);
     setUf("");
+    setIsLocked(false);
     onSearch({});
   };
 
@@ -107,10 +118,26 @@ export default function Filtro({ onSearch }) {
           )}
         </div>
 
-        <select value={uf} onChange={(e) => setUf(e.target.value)}>
+        <select 
+          value={uf} 
+          disabled={isLocked}
+          style={{ 
+            cursor: isLocked ? "not-allowed" : "pointer",
+            backgroundColor: isLocked ? "#edf2f7" : "#fff",
+            color: isLocked ? "#718096" : "#1a202c"
+          }}
+          onChange={(e) => {
+            const novaUf = e.target.value;
+            setUf(novaUf);
+            onSearch({ tags: selectedTags, uf: novaUf });
+          }}
+        >
           <option value="">Brasil (Todos)</option>
-          <option value="PA">Pará</option>
-          <option value="PI">Piauí</option>
+          {dadosEstados.map((estado) => (
+            <option key={estado.id} value={estado.sigla}>
+              {estado.nome}
+            </option>
+          ))}
         </select>
 
         <div style={{ display: "flex", gap: "10px" }}>

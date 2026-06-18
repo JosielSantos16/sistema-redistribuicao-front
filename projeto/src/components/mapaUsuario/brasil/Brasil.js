@@ -10,22 +10,35 @@ const StyledSvg = styled.svg`
     fill: #001858 !important;   
     stroke: #ffffff !important; 
     stroke-width: 0.6;         
-    transition: fill 0.3s ease;
+    transition: all 0.3s ease;
+    cursor: pointer; 
   }
 
   path:hover {
-    fill: #003399 !important;  
-    cursor: pointer;
+    fill: #003399 !important; 
+    filter: brightness(1.2);
   }
 `;
 
-const Brasil = () => {
+const Brasil = ({ onEstadoClick }) => {
+  
+  const handleClick = (e) => {
+    const idCompleto = e.target.id; 
+    if (idCompleto) {
+      const sigla = idCompleto.split('-')[1]; 
+      if (onEstadoClick) {
+        onEstadoClick(sigla);
+      }
+    }
+  };
+
   return (
     <StyledSvg
       xmlns="http://www.w3.org/2000/svg"
       width="612.51611"
       height="639.04297"
       viewBox="0 0 612 639"
+      onClick={handleClick}
       style={{ width: '100%', height: 'auto' }}
     >
       <path

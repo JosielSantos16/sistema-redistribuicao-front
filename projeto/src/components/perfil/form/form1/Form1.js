@@ -1,11 +1,13 @@
-import React from "react";
 import AsyncCreatableSelect from "react-select/async-creatable";
 import { PlusCircle } from "lucide-react";
 import { FormSection, FormGrid, GridItem, Input, AddButton } from "./styles";
 
 import listaUniversidadesJSON from "../../../../data/universidades-br.json";
+import listaCursosJSON from "../../../../data/cursos.json";
+import listaEstadosJSON from "../../../../data/estados.json";
 
 export default function Form1({ data, setData }) {
+  
   console.log("Arquivo JSON carregado?", !!listaUniversidadesJSON);
   if (listaUniversidadesJSON) {
     console.log("Total de itens:", listaUniversidadesJSON.length);
@@ -46,24 +48,75 @@ export default function Form1({ data, setData }) {
 
   const loadCursos = (inputValue) => {
     return new Promise((resolve) => {
-      const cursos = [
-        "Sistemas de Informação",
-        "Direito",
-        "Administração",
-        "Medicina",
-      ];
-      if (!inputValue)
-        return resolve(cursos.map((c) => ({ value: c, label: c })));
-      const filtrados = cursos.filter((c) =>
-        c.toLowerCase().includes(inputValue.toLowerCase()),
+      if (!listaCursosJSON || !Array.isArray(listaCursosJSON)) {
+        console.error("Arquivo cursos.json não encontrado ou inválido.");
+        return resolve([]);
+      }
+
+      if (!inputValue) {
+        const iniciais = listaCursosJSON.slice(0, 10).map((c) => ({
+          value: c.nome,
+          label: c.nome,
+        }));
+        return resolve(iniciais);
+      }
+
+      const buscaInput = inputValue.toLowerCase().trim();
+
+      const filtrados = listaCursosJSON.filter((c) =>
+        String(c.nome || "")
+          .toLowerCase()
+          .includes(buscaInput),
       );
-      resolve(filtrados.map((c) => ({ value: c, label: c })));
+
+      resolve(
+        filtrados.slice(0, 50).map((c) => ({
+          value: c.nome,
+          label: c.nome,
+        })),
+      );
     });
   };
+
+  const loadPreferencias = async (inputValue) => {
+  if (!inputValue || inputValue.length < 2) return [];
+
+  try {
+    const response = await fetch(`https://brasilapi.com.br/api/ibge/municipios/v1/${inputValue}`);
+    const municipios = await response.json();
+    
+    const opcoesMunicipios = Array.isArray(municipios) ? municipios.map(m => ({
+      value: `CIDADE-${m.codigo_ibge}`,
+      label: `${m.nome} (${m.uf})`
+    })) : [];
+
+    const opcoesEstados = listaEstadosJSON
+      .filter(e => e.nome.toLowerCase().includes(inputValue.toLowerCase()) || e.sigla.toLowerCase() === inputValue.toLowerCase())
+      .map(e => ({
+        value: `ESTADO-${e.sigla}`,
+        label: `${e.nome} (${e.sigla})`
+      }));
+
+    return [...opcoesEstados, ...opcoesMunicipios];
+  } catch (error) {
+    return [];
+  }
+};
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const customStyles = {
+    control: (provided) => ({
+      ...provided,
+      minHeight: "45px",
+      borderRadius: "8px",
+      border: "1px solid #e2e8f0",
+      boxShadow: "none",
+      "&:hover": { border: "1px solid #FF6600" },
+    }),
   };
 
   return (
@@ -122,38 +175,61 @@ export default function Form1({ data, setData }) {
               setData((prev) => ({ ...prev, curso: opt?.value || "" }))
             }
             placeholder="Curso/Area"
+            formatCreateLabel={(val) => `Usar "${val}"`}
+            styles={customStyles}
             isClearable
           />
         </GridItem>
 
         <GridItem className="cargo">
-          <select 
-            name="cargo" 
-            value={data.cargo || ""} 
+          <select
+            name="cargo"
+            value={data.cargo || ""}
             onChange={handleChange}
-            style={{ 
-                width: '100%', height: '45px', borderRadius: '8px', 
-                border: '1px solid #e2e8f0', padding: '0 10px', background: '#fff'
+            placeholder="Cargo/Função"
+            style={{
+              width: "100%",
+              height: "45px",
+              borderRadius: "8px",
+              border: "1px solid #e2e8f0",
+              padding: "0 10px",
+              background: "#fff",
             }}
           >
-            <option value="" disabled>Cargo/Função</option>
+            <option value="" disabled></option>
             <option value="Magistério Superior">Magistério Superior</option>
             <option value="EBTT">EBTT</option>
           </select>
         </GridItem>
 
         <GridItem className="preferencias">
-          <Input
-            name="preferencias_input"
-            placeholder="Locais de Preferência"
+          <label
+            style={{
+              fontSize: "0.8rem",
+              color: "#666",
+              marginBottom: "5px",
+              display: "block",
+            }}
+          >
+           
+          </label>
+          <AsyncCreatableSelect
+            isMulti
+            cacheOptions
+            loadOptions={loadPreferencias}
+            value={data.preferencias || []}
+            onChange={(selected) =>
+              setData((prev) => ({ ...prev, preferencias: selected }))
+            }
+            placeholder="Digite os Estados "
+            noOptionsMessage={() => "Digite o nome da cidade..."}
+            loadingMessage={() => "Buscando na BrasilAPI..."}
+            
+            formatCreateLabel={(val) => `Adicionar customizado: "${val}"`}
           />
         </GridItem>
       </FormGrid>
 
-      <AddButton type="button">
-        <PlusCircle size={18} />
-        Adicione Local
-      </AddButton>
 
     </FormSection>
   );
