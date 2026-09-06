@@ -4,63 +4,86 @@ import {
   Div, 
   LegendGrid, 
   LegendItem, 
-  OrangeCircle, 
+  IconChip,
   WelcomeBadge, 
   ButtonRow, 
   Button,
-  MarkerBadge 
 } from "./styles";
-import { Pointer, Info } from "lucide-react";
+import { MapPin, MousePointerClick, Info } from "lucide-react";
 
-export default function InfoSection({ isHome }) {
+// "section" permite renderizar só um pedaço do bloco de texto: "intro"
+// (badge+título+parágrafo) ou "actions" (legenda+botões). Serve pra Home
+// poder posicionar o mapa ENTRE os dois pedaços no mobile via CSS Grid,
+// sem duplicar nenhum componente. Por padrão ("full") renderiza tudo junto,
+// exatamente como antes — é assim que a tela de Mapa (logada) continua usando.
+export default function InfoSection({ isHome, section = "full", style }) {
   const navigate = useNavigate();
 
+  const mostrarIntro = section === "full" || section === "intro";
+  const mostrarAcoes = section === "full" || section === "actions";
+
   return (
-    <Div>
-      {isHome && <WelcomeBadge>Seja Bem-Vindo!</WelcomeBadge>}
-      
-      <h1>
-        {isHome 
-          ? "Redistribuição/Remoção de Servidores Públicos" 
-          : "Mapa de Interesse de Redistribuição/Remoção"}
-      </h1>
-      
-      <p>
-        Visualize em tempo real quantos servidores desejam ir para cada estado
-        e acesse a lista completa por região.
-      </p>
+    <Div style={style} $section={section}>
+      {mostrarIntro && (
+        <>
+          {isHome && <WelcomeBadge>Seja bem-vindo</WelcomeBadge>}
 
-      <LegendGrid>
-        <LegendItem borderColor="#879BF5">
-          <OrangeCircle />
-          <span>Cada estado pode exibir um marcador</span>
-        </LegendItem>
-        
-        <LegendItem borderColor="#E2CFE6">
-          <MarkerBadge>20</MarkerBadge>
-          <span>Número no marcador representa o total de interessados</span>
-        </LegendItem>
+          <h1>
+            {isHome
+              ? "Redistribuição e remoção de servidores públicos"
+              : "Mapa de interesse de redistribuição/remoção"}
+          </h1>
 
-        <LegendItem borderColor="#5CB3AA">
-          <Pointer size={22} color="#FF6600" />
-          <span>Clique em um estado para visualizar os perfis</span>
-        </LegendItem>
+          <p>
+            Visualize em tempo real quantos servidores desejam ir para cada estado
+            e acesse a lista completa por região.
+          </p>
+        </>
+      )}
 
-        <LegendItem borderColor="#E2DB93">
-          <Info size={22} color="#FF6600" />
-          <span>Informações baseadas nas preferências dos usuários.</span>
-        </LegendItem>
-      </LegendGrid>
+      {mostrarAcoes && (
+        <>
+          <LegendGrid>
+            <LegendItem>
+              <IconChip>
+                <MapPin size={18} strokeWidth={2.2} />
+              </IconChip>
+              <span>Cada estado pode exibir um marcador</span>
+            </LegendItem>
 
-      {isHome && (
-        <ButtonRow>
-          <Button variant="orange" onClick={() => navigate("/cadastro")}>
-            Cadastrar
-          </Button>
-          <Button variant="blue" onClick={() => navigate("/login")}>
-            Entrar
-          </Button>
-        </ButtonRow>
+            <LegendItem>
+              <IconChip tone="orange">
+                <strong>20</strong>
+              </IconChip>
+              <span>O número no marcador representa o total de interessados</span>
+            </LegendItem>
+
+            <LegendItem>
+              <IconChip>
+                <MousePointerClick size={18} strokeWidth={2.2} />
+              </IconChip>
+              <span>Clique em um estado para visualizar os perfis</span>
+            </LegendItem>
+
+            <LegendItem>
+              <IconChip tone="orange">
+                <Info size={18} strokeWidth={2.2} />
+              </IconChip>
+              <span>Informações baseadas nas preferências dos usuários</span>
+            </LegendItem>
+          </LegendGrid>
+
+          {isHome && (
+            <ButtonRow>
+              <Button variant="orange" onClick={() => navigate("/cadastro")}>
+                Cadastrar
+              </Button>
+              <Button variant="blue" onClick={() => navigate("/login")}>
+                Entrar
+              </Button>
+            </ButtonRow>
+          )}
+        </>
       )}
     </Div>
   );

@@ -1,4 +1,4 @@
-import { Container, Main, ContentRow } from "./styles";
+import { Container, Main, HeroRow, TextWrapper } from "./styles";
 import InfoSection from "../../components/mapaUsuario/InfoSection/InfoSection";
 import MapaContainer from "../../components/mapaUsuario/mapaContainer/MapaContainter";
 import StartsGrid from "../../components/mapaUsuario/startGrid/startGrids";
@@ -8,10 +8,13 @@ export default function Home() {
   return (
     <Container>
       <Main>
-        <ContentRow>
-          <InfoSection isHome={true} />
-          <MapaContainer />
-        </ContentRow>
+        <HeroRow>
+          <TextWrapper>
+            <InfoSection isHome section="intro" />
+            <InfoSection isHome section="actions" />
+          </TextWrapper>
+          <MapaContainer isHome />
+        </HeroRow>
         <StartsGrid />
         <CarrosselUsuario />
       </Main>

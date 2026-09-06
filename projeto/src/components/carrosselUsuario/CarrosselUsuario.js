@@ -1,6 +1,7 @@
 import {
   CarouselSection,
   CarouselTitle,
+  CarouselSubtitle,
   CarouselWrapper,
   CardsContainer,
   UserCard,
@@ -12,15 +13,11 @@ import {
   RouteContainer,
   RouteBadge,
 } from "./styles";
+import { Handshake } from "lucide-react";
 
-import prof1 from "../../assets/prof1.png";
-import prof2 from "../../assets/prof2.png";
-import prof3 from "../../assets/prof3.png";
-import prof4 from "../../assets/prof4.png";
-import prof5 from "../../assets/prof5.png";
-import prof6 from "../../assets/prof6.png";
-import prof7 from "../../assets/prof7.png";
-import prof8 from "../../assets/prof8.png";
+// Fotos de retrato profissional (randomuser.me é um serviço público feito
+// especificamente para avatares de exemplo/mockup — não são fotos de
+// usuários reais do sistema, só ilustração).
 
 const mockUsers = [
   {
@@ -31,7 +28,8 @@ const mockUsers = [
     instituicao: "UFOPA",
     origem: "Santarém - PA",
     destino: "Florianópolis - SC",
-    foto: prof1,
+    data: "12/08/2025",
+    foto: "https://randomuser.me/api/portraits/men/32.jpg",
   },
   {
     id: 2,
@@ -41,9 +39,9 @@ const mockUsers = [
     instituicao: "IFPA",
     origem: "Belém - PA",
     destino: "Curitiba - PR",
-    foto: prof2,
+    data: "03/09/2025",
+    foto: "https://randomuser.me/api/portraits/women/44.jpg",
   },
-
   {
     id: 3,
     nome: "Usuário C",
@@ -52,7 +50,8 @@ const mockUsers = [
     instituicao: "UFRJ",
     origem: "Rio - RJ",
     destino: "Brasília - DF",
-    foto: prof3,
+    data: "27/09/2025",
+    foto: "https://randomuser.me/api/portraits/men/65.jpg",
   },
   {
     id: 4,
@@ -62,7 +61,8 @@ const mockUsers = [
     instituicao: "IFSertãoPE",
     origem: "Petrolina - PE",
     destino: "Fortaleza - CE",
-    foto: prof4,
+    data: "05/10/2025",
+    foto: "https://randomuser.me/api/portraits/women/21.jpg",
   },
   {
     id: 5,
@@ -72,7 +72,8 @@ const mockUsers = [
     instituicao: "UnB",
     origem: "Brasília - DF",
     destino: "Goiânia - GO",
-    foto: prof5,
+    data: "18/10/2025",
+    foto: "https://randomuser.me/api/portraits/men/12.jpg",
   },
   {
     id: 6,
@@ -82,7 +83,8 @@ const mockUsers = [
     instituicao: "IFSC",
     origem: "Joinville - SC",
     destino: "Natal - RN",
-    foto: prof6,
+    data: "02/11/2025",
+    foto: "https://randomuser.me/api/portraits/women/68.jpg",
   },
   {
     id: 7,
@@ -92,7 +94,8 @@ const mockUsers = [
     instituicao: "UFMG",
     origem: "BH - MG",
     destino: "São Paulo - SP",
-    foto: prof7,
+    data: "21/11/2025",
+    foto: "https://randomuser.me/api/portraits/men/50.jpg",
   },
   {
     id: 8,
@@ -102,7 +105,8 @@ const mockUsers = [
     instituicao: "IFB",
     origem: "Brasília - DF",
     destino: "João Pessoa - PB",
-    foto: prof8,
+    data: "30/11/2025",
+    foto: "https://randomuser.me/api/portraits/women/33.jpg",
   },
 ];
 
@@ -112,42 +116,50 @@ export default function CarrosselUsuario() {
   return (
     <CarouselSection>
       <CarouselTitle>Servidores buscando conexão</CarouselTitle>
+      <CarouselSubtitle>
+        Exemplo ilustrativo — veja como os perfis aparecem depois que você faz login
+      </CarouselSubtitle>
       <CarouselWrapper>
         <CardsContainer>
           {carouselList.map((user, index) => (
             <UserCard key={index}>
               <CardHeader>
                 <h3>{user.nome}</h3>
-
                 <ProfileImg src={user.foto} alt={user.nome} />
               </CardHeader>
-              <CardContent>
-                <small>Publicação: 20/10/2025</small>
-                <InfoGroup>
-                  <label>Cargo:</label>
-                  <span>{user.cargo}</span>
-                </InfoGroup>
-                <InfoGroup>
-                  <label>Instituição:</label>
-                  <span>{user.instituicao}</span>
-                </InfoGroup>
-                <InfoGroup>
-                  <label>Contatos:</label>
-                  <MaskedText>email: ************</MaskedText>
-                </InfoGroup>
 
-                <RouteContainer>
-                  <RouteBadge>
-                    <small>ORIGEM</small>
-                    <span>{user.origem}</span>
-                  </RouteBadge>
-                  <div className="arrow">➔</div>
-                  <RouteBadge>
-                    <small>DESTINO</small>
-                    <span>{user.destino}</span>
-                  </RouteBadge>
-                </RouteContainer>
+              <CardContent>
+                <small>Publicação: {user.data}</small>
+
+                <InfoGroup>
+                  <label>Cargo/Especialidade:</label> <span>{user.cargo}</span>
+                </InfoGroup>
+                <InfoGroup>
+                  <label>Área:</label> <span>{user.area}</span>
+                </InfoGroup>
+                <InfoGroup>
+                  <label>Instituição:</label> <span>{user.instituicao}</span>
+                </InfoGroup>
+                <InfoGroup style={{ marginTop: "12px" }}>
+                  <label>Contatos:</label>
+                  <br />
+                  <label>Email:</label> <MaskedText>e********@email.com</MaskedText>
+                </InfoGroup>
               </CardContent>
+
+              <RouteContainer>
+                <RouteBadge>
+                  <span className="item-label">Origem</span>
+                  <span>{user.origem}</span>
+                </RouteBadge>
+                <div className="arrow">
+                  <Handshake size={14} strokeWidth={2.5} />
+                </div>
+                <RouteBadge>
+                  <span className="item-label">Destino</span>
+                  <span>{user.destino}</span>
+                </RouteBadge>
+              </RouteContainer>
             </UserCard>
           ))}
         </CardsContainer>

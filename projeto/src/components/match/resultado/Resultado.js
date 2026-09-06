@@ -17,6 +17,10 @@ export default function Resultado({ user }) {
     console.log(`Interesse enviado para: ${user.nome}`);
   };
 
+  const dataCadastro = user.criadoEm
+    ? new Date(user.criadoEm).toLocaleDateString('pt-BR')
+    : null;
+
   return (
     <CardContainer>
       <CardHeader>
@@ -30,14 +34,21 @@ export default function Resultado({ user }) {
       </CardHeader>
 
       <CardContent>
-        <span className="date">Publicação: 20/10/2025</span>
+        {dataCadastro && <span className="date">Cadastrado em: {dataCadastro}</span>}
 
         <div className="info-section">
-          <p><strong>Cargo/Especialidade:</strong> <span className="value">Cargo X</span></p>
-          <p><strong>Área:</strong> <span className="value">Alguma área</span></p>
-          <p><strong>Instituição:</strong> <span className="value">Universidade Federal do Oeste do Pará</span></p>
+          <p><strong>Cargo/Especialidade:</strong> <span className="value">{user.cargo || "Não informado"}</span></p>
+          <p><strong>Área/Curso:</strong> <span className="value">{user.curso || "Não informado"}</span></p>
+          <p><strong>Instituição:</strong> <span className="value">{user.origem || "Não informado"}</span></p>
           <p>
-            <strong>Lattes:</strong> <span className="link-lattes">http://lattes.cnpq.br/...</span>
+            <strong>Lattes:</strong>{" "}
+            {user.lattes ? (
+              <a className="link-lattes" href={user.lattes} target="_blank" rel="noreferrer">
+                {user.lattes}
+              </a>
+            ) : (
+              <span className="value">Não informado</span>
+            )}
           </p>
         </div>
 

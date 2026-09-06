@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 
 const StyledSvg = styled.svg`
@@ -18,10 +18,50 @@ const StyledSvg = styled.svg`
     fill: #003399 !important; 
     filter: brightness(1.2);
   }
+
+  .marker-circle {
+    fill: #FF6600;
+    stroke: #ffffff;
+    stroke-width: 1.5;
+  }
+
+  .marker-text {
+    fill: #ffffff;
+    font-size: 11px;
+    font-weight: bold;
+    text-anchor: middle;
+    dominant-baseline: central;
+    pointer-events: none;
+  }
 `;
 
-const Brasil = ({ onEstadoClick }) => {
-  
+// contagens: objeto { SIGLA_UF: total_interessados }, vindo de dados reais do backend.
+// Em vez de decorar coordenadas x/y na mão para os 27 estados, calculamos a
+// posição de cada marcador automaticamente a partir do centro geométrico
+// (getBBox) do próprio <path> do estado, depois que o SVG é montado no DOM.
+const Brasil = ({ onEstadoClick, contagens = {} }) => {
+  const svgRef = useRef(null);
+  const [centros, setCentros] = useState({});
+
+  useEffect(() => {
+    if (!svgRef.current) return;
+    const paths = svgRef.current.querySelectorAll("path[id^='BR-']");
+    const novosCentros = {};
+    paths.forEach((path) => {
+      const sigla = path.id.split("-")[1];
+      try {
+        const bbox = path.getBBox();
+        novosCentros[sigla] = {
+          x: bbox.x + bbox.width / 2,
+          y: bbox.y + bbox.height / 2,
+        };
+      } catch {
+        // getBBox pode falhar em navegadores/ambientes sem renderização real
+      }
+    });
+    setCentros(novosCentros);
+  }, []);
+
   const handleClick = (e) => {
     const idCompleto = e.target.id; 
     if (idCompleto) {
@@ -34,6 +74,7 @@ const Brasil = ({ onEstadoClick }) => {
 
   return (
     <StyledSvg
+      ref={svgRef}
       xmlns="http://www.w3.org/2000/svg"
       width="612.51611"
       height="639.04297"
@@ -176,6 +217,23 @@ const Brasil = ({ onEstadoClick }) => {
         title="Tocantins"
         id="BR-TO"
       />
+      {Object.entries(centros).map(([sigla, { x, y }]) => {
+        const total = contagens[sigla];
+        if (!total) return null;
+        const raio = Math.min(18, 8 + total * 0.8);
+        return (
+          <g
+            key={sigla}
+            onClick={() => onEstadoClick && onEstadoClick(sigla)}
+            style={{ cursor: "pointer" }}
+          >
+            <circle className="marker-circle" cx={x} cy={y} r={raio} />
+            <text className="marker-text" x={x} y={y}>
+              {total}
+            </text>
+          </g>
+        );
+      })}
     </StyledSvg>
   );
 };

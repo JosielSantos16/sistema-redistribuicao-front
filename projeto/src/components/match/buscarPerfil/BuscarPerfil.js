@@ -1,18 +1,21 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import AsyncSelect from "react-select/async";
 import Select from "react-select"; 
 import listaUniversidadesJSON from "../../../data/universidades-br.json";
 import listaEstadosJSON from "../../../data/estados.json";
+import api from "../../../services/api";
 
 import { FilterBar, FilterGrid, SearchButton, ClearButton } from "./styles";
 
+// Removido "Técnico-Administrativo": o modelo de usuário só aceita
+// "Magistério Superior" ou "EBTT" (User.cargo enum), então essa opção
+// nunca encontrava ninguém — era um filtro fantasma.
 const CARGOS = [
   { value: "Magistério Superior", label: "Magistério Superior" },
   { value: "EBTT", label: "EBTT" },
-  { value: "Técnico-Administrativo", label: "Técnico-Administrativo" }
 ];
 
-export default function BuscarPerfil({ setResultados }) {
+export default function BuscarPerfil({ setResultados, initialEstado }) {
   const [instituicao, setInstituicao] = useState(null);
   const [cargo, setCargo] = useState(null);
   const [destino, setDestino] = useState(null);
@@ -21,6 +24,47 @@ export default function BuscarPerfil({ setResultados }) {
     value: e.sigla,
     label: e.nome
   }));
+
+  // Função de busca real, com override opcional (usado no auto-disparo
+  // quando o usuário chega aqui clicando num estado no mapa, pois nesse
+  // momento o estado ainda não terminou de entrar no state via setDestino).
+  const buscar = useCallback(
+    async ({ instituicaoValue, cargoValue, destinoValue } = {}) => {
+      try {
+        const params = {};
+        const inst = instituicaoValue !== undefined ? instituicaoValue : instituicao?.value;
+        const carg = cargoValue !== undefined ? cargoValue : cargo?.value;
+        const dest = destinoValue !== undefined ? destinoValue : destino?.value;
+
+        if (inst) params.instituicao = inst;
+        if (carg) params.cargo = carg;
+        if (dest) params.estado = dest;
+
+        const { data } = await api.get("/perfis/buscar", { params });
+        setResultados(data);
+      } catch (err) {
+        console.error("Erro ao buscar perfis:", err);
+        setResultados([]);
+      }
+    },
+    [instituicao, cargo, destino, setResultados]
+  );
+
+  // Quando o usuário chega aqui clicando num estado no mapa: pré-seleciona
+  // o estado no filtro E já dispara a busca automaticamente (antes só
+  // pré-preenchia o campo, mas exigia clicar em "Buscar" de novo).
+  useEffect(() => {
+    if (initialEstado) {
+      const opcao = opcoesEstados.find(
+        (e) => e.value.toUpperCase() === initialEstado.toUpperCase()
+      );
+      if (opcao) {
+        setDestino(opcao);
+        buscar({ destinoValue: opcao.value });
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialEstado]);
 
   const loadInstituicoes = (inputValue) => {
     return new Promise((resolve) => {
@@ -33,39 +77,14 @@ export default function BuscarPerfil({ setResultados }) {
 
       resolve(
         filtradas.slice(0, 50).map((u) => ({
-          value: u.universidade,
+          // IMPORTANTE: o valor do filtro precisa ser a SIGLA, porque é
+          // assim que a instituição fica gravada no perfil do usuário
+          // (User.instituicao = "UFOPA", não o nome completo).
+          value: u.sigla || u.universidade,
           label: u.sigla ? `${u.sigla} - ${u.universidade}` : u.universidade,
         }))
       );
     });
-  };
-
-  const handleSearch = () => {
-    const mockData = [
-      {
-        id: "1",
-        nome: "Usuário A",
-        email: "a*******@email.com",
-        origem: instituicao?.label || "UFOPA", 
-        destino: destino?.label || "Pará",
-      },
-      {
-        id: "2",
-        nome: "Usuário B",
-        email: "b*******@email.com",
-        origem: instituicao?.label || "UFPA",
-        destino: destino?.label || "São Paulo",
-      },
-      {
-        id: "3",
-        nome: "Usuário C",
-        email: "c*******@email.com",
-        origem: "IFPA",
-        destino: "Rio de Janeiro",
-      }
-    ];
-
-    setResultados(mockData);
   };
 
   const customStyles = {
@@ -133,7 +152,7 @@ export default function BuscarPerfil({ setResultados }) {
 
         <ClearButton onClick={handleClear}>Limpar</ClearButton>
         
-        <SearchButton onClick={handleSearch}>
+        <SearchButton onClick={() => buscar()}>
           Buscar
         </SearchButton>
       </FilterGrid>

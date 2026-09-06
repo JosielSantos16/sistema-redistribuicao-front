@@ -4,7 +4,7 @@ import Sidebar from "../../components/sidebar/Sidebar";
 import Filtro from "../../components/editais/Filtro/Filtro";
 import ResultadoEdital from "../../components/editais/resultadoEdital/ResultadoEdital";
 import { Loader2, Globe, RefreshCw } from "lucide-react";
-import api from '../../services/api'; // Importando seu axios configurado
+import api from '../../services/api'; 
 import {
   PageLayout,
   MainContent,
@@ -12,7 +12,7 @@ import {
 
 export default function Editais() {
   const [loading, setLoading] = useState(true);
-  const [syncing, setSyncing] = useState(false); // Estado para o loading do botão do scraper
+  const [syncing, setSyncing] = useState(false); 
   const [editais, setEditais] = useState([]);
 
   const location = useLocation();
@@ -26,14 +26,17 @@ export default function Editais() {
     }
   }, [estadoVindoDoMapa]);
 
-  // Função que busca os dados REAIS salvos no MongoDB
   const buscarEditais = async (filtros = {}) => {
     setLoading(true);
     try {
-      // Bate na rota GET que criamos no backend
-      const response = await api.get('/notices');
-      
-      // Adaptando o formato do banco para bater com o que o componente <ResultadoEdital /> espera receber
+      const params = {};
+      if (filtros.uf) params.uf = filtros.uf;
+      if (filtros.tags && filtros.tags.length > 0) {
+        params.instituicao = filtros.tags.join(',');
+      }
+
+      const response = await api.get('/notices', { params });
+
       const dadosAdaptados = response.data.map(item => ({
         id: item._id,
         inst: item.instituicao,
@@ -51,13 +54,16 @@ export default function Editais() {
     }
   };
 
-  // Função para acionar o Web Scraper via Frontend
   const handleSincronizar = async () => {
     setSyncing(true);
     try {
-      await api.post('/scraper/PROGEP');
-      alert("Portal da PROGEP sincronizado e atualizado com sucesso!");
-      buscarEditais(); // Recarrega a listagem com os novos dados inseridos
+      const { data } = await api.post('/scraper/PROGEP');
+      if (data?.sucesso) {
+        alert(`Sincronização concluída! ${data.total_itens} editais encontrados/atualizados.`);
+      } else {
+        alert(`Falha na sincronização: ${data?.erro || 'erro desconhecido'}`);
+      }
+      buscarEditais(); 
     } catch (err) {
       console.error("Erro ao rodar scraper pelo front:", err);
       alert("Falha ao rodar a varredura automática. Verifique o console do backend.");
@@ -103,9 +109,9 @@ export default function Editais() {
           </button>
         </header>
 
-        <Filtro 
-          onSearch={buscarEditais} 
-          initialUf={estadoVindoDoMapa} 
+        <Filtro
+          onSearch={buscarEditais}
+          initialUf={estadoVindoDoMapa}
         />
 
         <section style={{ marginTop: '20px' }}>

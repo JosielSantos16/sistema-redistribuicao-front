@@ -5,6 +5,22 @@ export const MapContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -10%;
+    background: radial-gradient(circle at 55% 45%, rgba(0, 24, 88, 0.06), transparent 65%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  @media (max-width: 900px) {
+    flex: none;
+    width: 100%;
+    order: 1;
+  }
 `;
 
 export const MapContent = styled.div`
@@ -14,11 +30,21 @@ export const MapContent = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 1;
+
+  @media (max-width: 900px) {
+    max-width: 420px;
+    margin-top: 8px;
+  }
+
+  @media (max-width: 480px) {
+    max-width: 320px;
+  }
 
   svg {
     width: 100%;
     height: auto;
-    filter: drop-shadow(0px 20px 40px rgba(0, 24, 88, 0.12));
+    filter: drop-shadow(0px 24px 48px rgba(0, 24, 88, 0.16));
 
     path {
       fill: #001858;
@@ -33,25 +59,4 @@ export const MapContent = styled.div`
       }
     }
   }
-`;
-
-export const Marker = styled.div`
-  position: absolute;
-  background: #FF6600;
-  color: white;
-  width: 35px;
-  height: 35px;
-  border-radius: 50%;
-  border: 2px solid white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  font-weight: bold;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-  z-index: 10;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-  top: ${(props) => props.y};
-  left: ${(props) => props.x};
 `;
