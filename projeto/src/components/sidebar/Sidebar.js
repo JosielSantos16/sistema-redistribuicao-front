@@ -1,20 +1,17 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Container, UserProfile, NavItem, LogoutArea, MenuButton, Overlay } from "./styles";
+import { Container, UserProfile, NavItem, LogoutArea, MenuButton, Overlay, Badge } from "./styles";
 import Usuario from "../../assets/usuario.png";
 import api from "../../services/api";
+import { resolverFotoUrl } from "../../utils/mediaUrl";
+import { useSync } from "../../contexts/SyncContext";
 import {
   Map, Search, FileText, User, Bell, Users, 
-  HelpCircle, Shield, Settings, LogOut, Camera, Menu, X
+  HelpCircle, Shield, Settings, LogOut, Camera, Menu, X, RefreshCw
 } from "lucide-react";
 
-const API_BASE_URL = "http://localhost:3001"; // mesma base usada em services/api.js
 const CACHE_KEY = "@Wolf:perfilCache";
 
-// Lê o último nome/foto conhecidos do localStorage, pra já mostrar isso de
-// cara ao montar (evita o "pisca-pisca" pra foto padrão a cada troca de
-// página — antes disso, cada tela remonta o menu do zero e ele ficava um
-// instante mostrando o estado vazio até a requisição /profile responder).
 function lerCache() {
   try {
     const bruto = localStorage.getItem(CACHE_KEY);
@@ -22,6 +19,11 @@ function lerCache() {
   } catch {
     return {};
   }
+}
+
+function tokenHeader() {
+  const token = localStorage.getItem("@Wolf:token");
+  return { Authorization: `Bearer ${token}` };
 }
 
 export default function Sidebar() {
@@ -36,17 +38,16 @@ export default function Sidebar() {
   const [fotoUrl, setFotoUrl] = useState(cache.fotoUrl || null);
   const [enviandoFoto, setEnviandoFoto] = useState(false);
   const [menuAberto, setMenuAberto] = useState(false);
+  const [totalNotificacoes, setTotalNotificacoes] = useState(0);
+  const { sincronizando, naoVisualizado, ultimoResultado } = useSync();
 
   useEffect(() => {
     async function carregarPerfil() {
       try {
-        const token = localStorage.getItem("@Wolf:token");
-        const { data } = await api.get("/profile", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const { data } = await api.get("/profile", { headers: tokenHeader() });
 
         const nomeFinal = data.name || "Usuário";
-        const fotoFinal = data.foto_url ? `${API_BASE_URL}${data.foto_url}` : null;
+        const fotoFinal = resolverFotoUrl(data.foto_url);
 
         setNome(nomeFinal);
         setFotoUrl(fotoFinal);
@@ -59,10 +60,33 @@ export default function Sidebar() {
         console.error("Erro ao carregar dados do usuário:", err);
       }
     }
-    carregarPerfil();
-  }, []);
 
-  // Fecha o menu mobile automaticamente ao trocar de página
+    // O número do sino é a soma de duas coisas: pedidos de match esperando
+    // resposta, e mensagens que chegaram em conversas já confirmadas e
+    // você ainda não abriu.
+    async function carregarNotificacoes() {
+      try {
+        const [respRecebidos, respConfirmados] = await Promise.all([
+          api.get("/matches/recebidos", { headers: tokenHeader() }),
+          api.get("/matches/confirmados", { headers: tokenHeader() }),
+        ]);
+
+        const totalPendentes = respRecebidos.data.length;
+        const totalNaoLidas = respConfirmados.data.reduce(
+          (soma, m) => soma + (m.naoLidas || 0),
+          0
+        );
+
+        setTotalNotificacoes(totalPendentes + totalNaoLidas);
+      } catch (err) {
+        console.error("Erro ao carregar notificações:", err);
+      }
+    }
+
+    carregarPerfil();
+    carregarNotificacoes();
+  }, [location.pathname]); 
+
   useEffect(() => {
     setMenuAberto(false);
   }, [location.pathname]);
@@ -85,23 +109,19 @@ export default function Sidebar() {
       return;
     }
 
-    // Preview local imediato, enquanto o upload real acontece por baixo
     const previewUrl = URL.createObjectURL(file);
     setFotoUrl(previewUrl);
     setEnviandoFoto(true);
 
     try {
-      const token = localStorage.getItem("@Wolf:token");
       const payload = new FormData();
       payload.append("foto", file);
 
       const { data } = await api.put("/profile/foto", payload, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: tokenHeader(),
       });
 
-      const fotoFinal = `${API_BASE_URL}${data.foto_url}`;
+      const fotoFinal = resolverFotoUrl(data.foto_url);
       setFotoUrl(fotoFinal);
       localStorage.setItem(CACHE_KEY, JSON.stringify({ nome, fotoUrl: fotoFinal }));
     } catch (err) {
@@ -115,9 +135,15 @@ export default function Sidebar() {
   const menuItems = [
     { name: "Mapa de Usuário", icon: <Map />, path: "/mapa" },
     { name: "Encontrar perfis", icon: <Search />, path: "/busca" },
-    { name: "Editais", icon: <FileText />, path: "/editais" },
+    { 
+      name: "Editais", 
+      icon: <FileText />, 
+      path: "/editais",
+      sincronizando,
+      badge: naoVisualizado ? (ultimoResultado?.sucesso ? ultimoResultado.total_itens : "!") : null,
+    },
     { name: "Perfil", icon: <User />, path: "/perfil" },
-    { name: "Notificações", icon: <Bell />, path: "/notificacoes" },
+    { name: "Notificações", icon: <Bell />, path: "/notificacoes", badge: totalNotificacoes },
     { name: "Seja parceiro", icon: <Users />, path: "/seja-parceiro" },
     { name: "Ajuda e suporte", icon: <HelpCircle />, path: "/suporte" },
     { name: "Políticas e Regulamentos", icon: <Shield />, path: "/politicas" },
@@ -126,12 +152,10 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Botão hambúrguer — só aparece em telas pequenas (controlado via CSS) */}
       <MenuButton onClick={() => setMenuAberto((v) => !v)}>
         {menuAberto ? <X size={22} /> : <Menu size={22} />}
       </MenuButton>
 
-      {/* Fundo escurecido atrás do menu aberto no mobile — clicar nele fecha */}
       {menuAberto && <Overlay onClick={() => setMenuAberto(false)} />}
 
       <Container aberto={menuAberto}>
@@ -161,7 +185,14 @@ export default function Sidebar() {
             active={isActive(item.path)} 
             onClick={() => navigate(item.path)}
           >
-            {item.icon} {item.name}
+            <span className="icone-com-badge">
+              {item.icon}
+              {item.sincronizando && (
+                <RefreshCw size={11} className="spin-sync" />
+              )}
+              {!!item.badge && <Badge>{item.badge === "!" ? "!" : (item.badge > 9 ? "9+" : item.badge)}</Badge>}
+            </span>
+            {item.name}
           </NavItem>
         ))}
 

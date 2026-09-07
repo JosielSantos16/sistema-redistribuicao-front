@@ -22,15 +22,23 @@ export default function ResultadoEdital({ edital }) {
             {edital.desc}
           </p>
 
-          <PeriodoTag>
-            Período de inscrições: 01/02/2026 à 05/03/2026
-          </PeriodoTag>
+          {edital.capturadoEm && (
+            <PeriodoTag>
+              Encontrado por nosso sistema em: {new Date(edital.capturadoEm).toLocaleDateString('pt-BR')}
+            </PeriodoTag>
+          )}
         </div>
       </EditalMain>
 
-      <BotaoAcesso href={edital.link || "#"} target="_blank">
-        Acessar Edital <ExternalLink size={18} />
-      </BotaoAcesso>
+      {edital.link ? (
+        <BotaoAcesso href={edital.link} target="_blank">
+          Acessar Edital <ExternalLink size={18} />
+        </BotaoAcesso>
+      ) : (
+        <BotaoAcesso as="span" className="indisponivel">
+          Link indisponível
+        </BotaoAcesso>
+      )}
     </EditalContainer>
   );
 }

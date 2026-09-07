@@ -138,8 +138,31 @@ export const NavItem = styled.div`
   background-color: ${props => props.active ? '#FF6600' : 'transparent'};
   color: ${props => props.active ? '#fff' : '#cbd5e0'};
 
-  svg {
+  .icone-com-badge {
+    position: relative;
+    display: inline-flex;
     margin-right: 12px;
+    flex-shrink: 0;
+  }
+
+  .spin-sync {
+    position: absolute;
+    bottom: -4px;
+    right: -6px;
+    width: 11px !important;
+    height: 11px !important;
+    color: #FF6600;
+    background: #001858;
+    border-radius: 50%;
+    animation: girar-sync 1s linear infinite;
+  }
+
+  @keyframes girar-sync {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  svg {
     width: 18px;
     height: 18px;
     flex-shrink: 0;
@@ -149,6 +172,26 @@ export const NavItem = styled.div`
     background-color: ${props => props.active ? '#FF6600' : 'rgba(255,255,255,0.1)'};
     color: #fff;
   }
+`;
+
+// Bolinha numérica sobre o ícone de Notificações, indicando quantas
+// solicitações de match pendentes você tem.
+export const Badge = styled.span`
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  background: #FF6600;
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 3px;
+  border: 2px solid #001858;
 `;
 
 export const LogoutArea = styled.div`

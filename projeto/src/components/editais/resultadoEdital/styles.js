@@ -71,4 +71,14 @@ export const BotaoAcesso = styled.a`
   &:hover {
     opacity: 0.9;
   }
+
+  &.indisponivel {
+    background-color: #edf2f7;
+    color: #a0aec0;
+    cursor: not-allowed;
+  }
+
+  &.indisponivel:hover {
+    opacity: 1;
+  }
 `;

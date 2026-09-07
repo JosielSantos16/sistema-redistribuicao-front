@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { SyncProvider } from "../contexts/SyncContext";
 import Home from "../pages/home/Home";
 import Cadastro from "../pages/cadastro/Cadastro";
 import VerificarEmail from "../pages/verificarEmail/VerificarEmail";
@@ -24,30 +25,32 @@ const PrivateRoute = ({ children }) => {
 function AppRoutes() {
   return (
     <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/cadastro" element={<Cadastro />} />
-        <Route path="/verificar-email" element={<VerificarEmail />} />
-        <Route path="/finalizar-cadastro" element={<CadastroFinal />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/seja-parceiro" element={<Parceiros />} />
-        <Route path="/notificacoes" element={<Notificacoes />} /> 
-        <Route path="/suporte" element={<AjudaSuporte />} />
-        <Route path="/politicas" element={<Politicas />} />
-        <Route path="/configuracoes" element={<Configuracoes />} />
+      <SyncProvider>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/cadastro" element={<Cadastro />} />
+          <Route path="/verificar-email" element={<VerificarEmail />} />
+          <Route path="/finalizar-cadastro" element={<CadastroFinal />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/seja-parceiro" element={<Parceiros />} />
+          <Route path="/notificacoes" element={<Notificacoes />} /> 
+          <Route path="/suporte" element={<AjudaSuporte />} />
+          <Route path="/politicas" element={<Politicas />} />
+          <Route path="/configuracoes" element={<Configuracoes />} />
 
-        <Route path="/completar-perfil" element={
-          <PrivateRoute> <CompletarPerfil /> </PrivateRoute>
-        } />
-        <Route path="/mapa" element={
-          <PrivateRoute> <Mapa /> </PrivateRoute>
-        } />
-        <Route path="/busca" element={<BuscaPerfis />} />
-        <Route path="/editais" element={<Editais />} />
-        <Route path="/perfil" element={
-          <PrivateRoute> <Perfil /> </PrivateRoute>
-        } />
-      </Routes>
+          <Route path="/completar-perfil" element={
+            <PrivateRoute> <CompletarPerfil /> </PrivateRoute>
+          } />
+          <Route path="/mapa" element={
+            <PrivateRoute> <Mapa /> </PrivateRoute>
+          } />
+          <Route path="/busca" element={<BuscaPerfis />} />
+          <Route path="/editais" element={<Editais />} />
+          <Route path="/perfil" element={
+            <PrivateRoute> <Perfil /> </PrivateRoute>
+          } />
+        </Routes>
+      </SyncProvider>
     </Router>
   );
 }
