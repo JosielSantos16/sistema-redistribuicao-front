@@ -13,50 +13,95 @@ import {
   RightSide,    
   Header,
   Footer,
+  ErrorMessage,
 } from './styles';
 
 export default function CompletarPerfil() {
   const [step, setStep] = useState(1);
-  
+  const [saving, setSaving] = useState(false);
+  const [erro, setErro] = useState("");
+
   const [formData, setFormData] = useState({
     lattes: '',
     instituicao: '',
     departamento: '',
     curso: '',
     cargo: '',
-    preferencias: []
+    interesse_redistribuicao: false,
+    estado_destino: '',
+    comprovante: null,
   });
 
   const navigate = useNavigate(); 
 
-const handleNext = async () => {
-  if (step < 2) {
-    setStep(step + 1);
-  } else {
-    try {
-      // Feedback visual
-      const btn = document.querySelector('.next-btn');
-      btn.innerText = "Salvando...";
-      btn.disabled = true;
+  const validarPasso1 = () => {
+    if (!formData.instituicao || !formData.departamento || !formData.curso || !formData.cargo) {
+      setErro("Preencha todos os campos obrigatórios antes de continuar.");
+      return false;
+    }
+    if (formData.interesse_redistribuicao && !formData.estado_destino) {
+      setErro("Selecione o estado de destino desejado.");
+      return false;
+    }
+    setErro("");
+    return true;
+  };
 
+  const handleNext = async () => {
+    if (step === 1) {
+      if (!validarPasso1()) return;
+      setStep(2);
+      return;
+    }
+
+    // Passo 2 (Finalizar): exige o comprovante antes de mandar pro backend —
+    // antes disso o "sucesso" aparecia mesmo sem PDF nenhum ser enviado.
+    if (!formData.comprovante) {
+      setErro("Anexe o comprovante de vínculo (PDF) antes de finalizar.");
+      return;
+    }
+
+    setErro("");
+    setSaving(true);
+
+    try {
       const token = localStorage.getItem('@Wolf:token');
-      
-      await api.put('/profile', formData, {
-        headers: { Authorization: `Bearer ${token}` }
+
+      // multipart/form-data de verdade — antes o arquivo ia junto de um
+      // JSON.stringify, que descarta um File por completo (virava {}).
+      const payload = new FormData();
+      payload.append('instituicao', formData.instituicao);
+      payload.append('departamento', formData.departamento);
+      payload.append('curso', formData.curso);
+      payload.append('cargo', formData.cargo);
+      payload.append('lattes', formData.lattes || '');
+      payload.append('interesse_redistribuicao', formData.interesse_redistribuicao);
+      if (formData.interesse_redistribuicao) {
+        payload.append('estado_destino', formData.estado_destino);
+      }
+      payload.append('comprovante', formData.comprovante);
+
+      await api.put('/profile', payload, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
-      alert("Perfil atualizado com sucesso!");
-      navigate('/mapa'); // Mudei para dashboard que é a tela principal
+      navigate('/mapa');
     } catch (err) {
-      alert("Erro ao salvar perfil. Verifique sua conexão com o servidor na porta 3001.");
-      const btn = document.querySelector('.next-btn');
-      btn.innerText = "Finalizar";
-      btn.disabled = false;
+      const mensagemServidor = err.response?.data?.error;
+      setErro(
+        Array.isArray(mensagemServidor)
+          ? mensagemServidor.join(' ')
+          : mensagemServidor || "Erro ao salvar perfil. Verifique sua conexão com o servidor."
+      );
+    } finally {
+      setSaving(false);
     }
-  }
-};
+  };
 
   const handleBack = () => {
+    setErro("");
     if (step > 1) setStep(step - 1);
   };
 
@@ -77,15 +122,17 @@ const handleNext = async () => {
           ? <Form1 data={formData} setData={setFormData} />
           : <Form2 data={formData} setData={setFormData}/>}
 
+          {erro && <ErrorMessage>{erro}</ErrorMessage>}
+
           <Footer>
             {step > 1 && (
-              <button className="back-btn" onClick={handleBack}>
+              <button className="back-btn" onClick={handleBack} disabled={saving}>
                 Voltar
               </button>
             )}
             
-            <button className="next-btn" onClick={handleNext}>
-              {step === 2 ? 'Finalizar' : 'Próximo'}
+            <button className="next-btn" onClick={handleNext} disabled={saving}>
+              {saving ? "Salvando..." : step === 2 ? 'Finalizar' : 'Próximo'}
             </button>
           </Footer>
         </RightSide>

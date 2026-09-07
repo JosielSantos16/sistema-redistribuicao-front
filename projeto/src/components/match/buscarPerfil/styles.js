@@ -19,6 +19,7 @@ export const FilterGrid = styled.div`
   padding: 25px;
   gap: 15px;
   align-items: center;
+  flex-wrap: wrap;
 
   .select-field {
     flex: 1;
@@ -33,6 +34,16 @@ export const FilterGrid = styled.div`
     }
     .arrow { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #a0aec0; }
   }
+
+  @media (max-width: 900px) {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 18px;
+
+    > div {
+      width: 100%;
+    }
+  }
 `;
 
 export const SearchButton = styled.button`
@@ -43,6 +54,11 @@ export const SearchButton = styled.button`
   border: none;
   font-weight: 700;
   cursor: pointer;
+
+  @media (max-width: 900px) {
+    width: 100%;
+    padding: 12px 20px;
+  }
 `;
 
 export const ClearButton = styled.button`
@@ -51,4 +67,9 @@ export const ClearButton = styled.button`
   padding: 10px 20px;
   border-radius: 6px;
   cursor: pointer;
+
+  @media (max-width: 900px) {
+    width: 100%;
+    padding: 12px 20px;
+  }
 `;

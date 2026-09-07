@@ -2,10 +2,11 @@ import styled from 'styled-components';
 
 export const FormSection = styled.div`
   h3 {
+    font-family: var(--fonte-display, inherit);
     font-size: 24px;
-    color: #1a202c;
+    color: #001858;
     margin-bottom: 8px;
-    font-weight: 700;
+    font-weight: 600;
   }
   p {
     font-size: 14px;
@@ -24,6 +25,22 @@ export const UploadArea = styled.div`
     align-items: center;
     position: relative;
     background-color: #f8fafc;
+    transition: border-color 0.2s ease;
+
+    &:hover {
+      border-color: #FF6600;
+    }
+
+    &.has-file {
+      border-color: #48BB78;
+      border-style: solid;
+      background-color: #F0FFF4;
+    }
+
+    &.has-error {
+      border-color: #FC8181;
+      background-color: #FFF5F5;
+    }
   }
 
   .icon-circle {
@@ -35,7 +52,7 @@ export const UploadArea = styled.div`
     align-items: center;
     justify-content: center;
     margin-bottom: 16px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 8px rgba(0, 24, 88, 0.08);
   }
 
   .main-text {

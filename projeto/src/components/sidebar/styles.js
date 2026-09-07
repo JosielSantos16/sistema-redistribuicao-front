@@ -11,6 +11,57 @@ export const Container = styled.aside`
   box-sizing: border-box;
   position: sticky;
   top: 0;
+  z-index: 100;
+  /* Fixando a fonte aqui — antes o menu herdava a fonte de qualquer página
+     que o estivesse usando, então ele mudava de aparência ao navegar entre
+     telas que ainda não tinham a mesma configuração de fonte. */
+  font-family: var(--fonte-corpo, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif);
+
+  /* No mobile, o menu de 275px fixo não cabe — ele passa a viver fora da
+     tela (translateX) e só entra quando aberto pelo botão hambúrguer. */
+  @media (max-width: 900px) {
+    position: fixed;
+    left: 0;
+    padding-top: 90px;
+    transform: translateX(${props => props.aberto ? '0' : '-100%'});
+    transition: transform 0.25s ease;
+    box-shadow: ${props => props.aberto ? '4px 0 24px rgba(0, 0, 0, 0.25)' : 'none'};
+  }
+`;
+
+// Botão hambúrguer fixo no topo — só aparece em telas pequenas
+export const MenuButton = styled.button`
+  display: none;
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 110;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: #001858;
+  color: white;
+  border: none;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 24, 88, 0.25);
+
+  @media (max-width: 900px) {
+    display: flex;
+  }
+`;
+
+// Fundo escurecido que aparece atrás do menu quando aberto no mobile
+export const Overlay = styled.div`
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 99;
+
+  @media (min-width: 901px) {
+    display: none;
+  }
 `;
 
 export const UserProfile = styled.div`
@@ -19,18 +70,59 @@ export const UserProfile = styled.div`
   align-items: center;
   margin-bottom: 30px;
 
+  .avatar-wrapper {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    border-radius: 50%;
+  }
+
   img {
     width: 100px;
     height: 100px;
     border-radius: 50%;
     border: 3px solid #fff;
-    margin-bottom: 12px;
     object-fit: cover;
+    display: block;
+  }
+
+  .avatar-overlay {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: rgba(0, 24, 88, 0.65);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    color: white;
+  }
+
+  .avatar-wrapper:hover .avatar-overlay {
+    opacity: 1;
+  }
+
+  .avatar-loading {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: rgba(0, 24, 88, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    text-align: center;
   }
 
   span {
     font-size: 14px;
     font-weight: 600;
+    text-align: center;
+    padding: 0 20px;
   }
 `;
 
@@ -50,6 +142,7 @@ export const NavItem = styled.div`
     margin-right: 12px;
     width: 18px;
     height: 18px;
+    flex-shrink: 0;
   }
 
   &:hover {

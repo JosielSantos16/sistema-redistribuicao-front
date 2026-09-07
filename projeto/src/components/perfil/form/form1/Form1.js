@@ -1,18 +1,19 @@
 import AsyncCreatableSelect from "react-select/async-creatable";
-import { PlusCircle } from "lucide-react";
-import { FormSection, FormGrid, GridItem, Input, AddButton } from "./styles";
+import Select from "react-select";
+import {
+  FormSection,
+  FormGrid,
+  GridItem,
+  Input,
+  ToggleRow,
+  ToggleSwitch,
+} from "./styles";
 
 import listaUniversidadesJSON from "../../../../data/universidades-br.json";
 import listaCursosJSON from "../../../../data/cursos.json";
 import listaEstadosJSON from "../../../../data/estados.json";
 
 export default function Form1({ data, setData }) {
-  
-  console.log("Arquivo JSON carregado?", !!listaUniversidadesJSON);
-  if (listaUniversidadesJSON) {
-    console.log("Total de itens:", listaUniversidadesJSON.length);
-  }
-
   const loadInstituicoes = (inputValue) => {
     return new Promise((resolve) => {
       if (!listaUniversidadesJSON || !Array.isArray(listaUniversidadesJSON)) {
@@ -78,30 +79,12 @@ export default function Form1({ data, setData }) {
     });
   };
 
-  const loadPreferencias = async (inputValue) => {
-  if (!inputValue || inputValue.length < 2) return [];
-
-  try {
-    const response = await fetch(`https://brasilapi.com.br/api/ibge/municipios/v1/${inputValue}`);
-    const municipios = await response.json();
-    
-    const opcoesMunicipios = Array.isArray(municipios) ? municipios.map(m => ({
-      value: `CIDADE-${m.codigo_ibge}`,
-      label: `${m.nome} (${m.uf})`
-    })) : [];
-
-    const opcoesEstados = listaEstadosJSON
-      .filter(e => e.nome.toLowerCase().includes(inputValue.toLowerCase()) || e.sigla.toLowerCase() === inputValue.toLowerCase())
-      .map(e => ({
-        value: `ESTADO-${e.sigla}`,
-        label: `${e.nome} (${e.sigla})`
-      }));
-
-    return [...opcoesEstados, ...opcoesMunicipios];
-  } catch (error) {
-    return [];
-  }
-};
+  // Lista simples de estados (SIGLA/nome), a mesma usada no Mapa e na Busca
+  // de Perfis — é o que o backend (User.estado_destino) realmente espera.
+  const opcoesEstados = listaEstadosJSON.map((e) => ({
+    value: e.sigla,
+    label: e.nome,
+  }));
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -186,7 +169,6 @@ export default function Form1({ data, setData }) {
             name="cargo"
             value={data.cargo || ""}
             onChange={handleChange}
-            placeholder="Cargo/Função"
             style={{
               width: "100%",
               height: "45px",
@@ -196,41 +178,58 @@ export default function Form1({ data, setData }) {
               background: "#fff",
             }}
           >
-            <option value="" disabled></option>
+            <option value="" disabled>Cargo/Função</option>
             <option value="Magistério Superior">Magistério Superior</option>
             <option value="EBTT">EBTT</option>
           </select>
         </GridItem>
 
-        <GridItem className="preferencias">
-          <label
-            style={{
-              fontSize: "0.8rem",
-              color: "#666",
-              marginBottom: "5px",
-              display: "block",
-            }}
-          >
-           
-          </label>
-          <AsyncCreatableSelect
-            isMulti
-            cacheOptions
-            loadOptions={loadPreferencias}
-            value={data.preferencias || []}
-            onChange={(selected) =>
-              setData((prev) => ({ ...prev, preferencias: selected }))
-            }
-            placeholder="Digite os Estados "
-            noOptionsMessage={() => "Digite o nome da cidade..."}
-            loadingMessage={() => "Buscando na BrasilAPI..."}
-            
-            formatCreateLabel={(val) => `Adicionar customizado: "${val}"`}
-          />
+        {/* Isso é o que realmente alimenta o Mapa de Interesse e a Busca
+            de Perfis — antes esse espaço tinha um campo de "preferências"
+            (cidades soltas via BrasilAPI) que não batia com nada que o
+            backend usa de verdade. */}
+        <GridItem className="interesse">
+          <ToggleRow>
+            <ToggleSwitch>
+              <input
+                type="checkbox"
+                checked={!!data.interesse_redistribuicao}
+                onChange={(e) =>
+                  setData((prev) => ({
+                    ...prev,
+                    interesse_redistribuicao: e.target.checked,
+                    estado_destino: e.target.checked ? prev.estado_destino : "",
+                  }))
+                }
+              />
+              <span className="slider" />
+            </ToggleSwitch>
+            <span className="toggle-label">
+              Tenho interesse em redistribuição/remoção
+            </span>
+          </ToggleRow>
         </GridItem>
+
+        {data.interesse_redistribuicao && (
+          <GridItem className="estadoDestino">
+            <Select
+              options={opcoesEstados}
+              value={
+                data.estado_destino
+                  ? opcoesEstados.find((o) => o.value === data.estado_destino)
+                  : null
+              }
+              onChange={(opt) =>
+                setData((prev) => ({ ...prev, estado_destino: opt?.value || "" }))
+              }
+              placeholder="Estado de destino desejado"
+              styles={customStyles}
+              isClearable
+              noOptionsMessage={() => "Estado não encontrado"}
+            />
+          </GridItem>
+        )}
       </FormGrid>
-
-
     </FormSection>
   );
 }

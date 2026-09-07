@@ -1,5 +1,5 @@
 import React from 'react';
-import { Handshake } from 'lucide-react'; // Certifique-se de instalar: npm install lucide-react
+import { Handshake } from 'lucide-react'; 
 import UsuarioImg from '../../../assets/usuario.png';
 import { 
   CardContainer, 
@@ -12,7 +12,6 @@ import {
 } from './styles';
 
 export default function Resultado({ user }) {
-  // Função para lidar com o clique
   const handleMatch = () => {
     console.log(`Interesse enviado para: ${user.nome}`);
   };
@@ -27,7 +26,7 @@ export default function Resultado({ user }) {
         <h3>{user.nome || "Usuário"}</h3>
         <AvatarWrapper>
           <img 
-            src={UsuarioImg} 
+            src={user.foto_url || UsuarioImg} 
             alt={user.nome} 
           />
         </AvatarWrapper>
@@ -39,7 +38,7 @@ export default function Resultado({ user }) {
         <div className="info-section">
           <p><strong>Cargo/Especialidade:</strong> <span className="value">{user.cargo || "Não informado"}</span></p>
           <p><strong>Área/Curso:</strong> <span className="value">{user.curso || "Não informado"}</span></p>
-          <p><strong>Instituição:</strong> <span className="value">{user.origem || "Não informado"}</span></p>
+          <p><strong>Instituição:</strong> <span className="value">{user.instituicao || "Não informado"}</span></p>
           <p>
             <strong>Lattes:</strong>{" "}
             {user.lattes ? (

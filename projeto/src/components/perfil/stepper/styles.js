@@ -22,19 +22,20 @@ export const Step = styled.div`
     width: 28px;
     height: 28px;
     border-radius: 50%;
-    background: ${props => props.active ? '#001858' : 'white'};
+    background: ${props => props.active ? '#FF6600' : 'white'};
     color: ${props => props.active ? 'white' : '#cbd5e0'};
-    border: 1px solid ${props => props.active ? '#001858' : '#e2e8f0'};
+    border: 1px solid ${props => props.active ? '#FF6600' : '#e2e8f0'};
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 700;
     font-size: 14px;
+    transition: all 0.2s ease;
   }
 
   span {
     font-size: 13px;
-    font-weight: 500;
-    color: ${props => props.active ? '#4a5568' : '#cbd5e0'};
+    font-weight: 600;
+    color: ${props => props.active ? '#001858' : '#cbd5e0'};
   }
 `;
