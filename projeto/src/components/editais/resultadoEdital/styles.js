@@ -11,6 +11,12 @@ export const EditalContainer = styled.div`
   position: relative;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   border-left: 4px solid #001858; 
+
+  @media (max-width: 700px) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
 `;
 
 export const EditalMain = styled.div`
@@ -33,7 +39,7 @@ export const EditalMain = styled.div`
       font-size: 16px;
       color: #001858;
       font-weight: 700;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: var(--fonte-corpo, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif);
     }
 
     .description {
@@ -53,6 +59,12 @@ export const PeriodoTag = styled.span`
   font-style: italic;
   width: fit-content;
   font-weight: 500;
+
+  &.data-real {
+    background-color: #16a34a;
+    font-style: normal;
+    font-weight: 700;
+  }
 `;
 
 export const BotaoAcesso = styled.a`
@@ -65,8 +77,10 @@ export const BotaoAcesso = styled.a`
   font-size: 14px;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
   transition: opacity 0.2s;
+  flex-shrink: 0;
 
   &:hover {
     opacity: 0.9;
@@ -80,5 +94,9 @@ export const BotaoAcesso = styled.a`
 
   &.indisponivel:hover {
     opacity: 1;
+  }
+
+  @media (max-width: 700px) {
+    width: 100%;
   }
 `;

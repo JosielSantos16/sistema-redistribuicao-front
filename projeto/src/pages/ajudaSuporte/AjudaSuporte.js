@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Sidebar from '../../components/sidebar/Sidebar';
+import api from '../../services/api';
 import { 
   MainContainer, 
   ContentArea, 
@@ -7,7 +8,8 @@ import {
   SupportCard, 
   ContactGrid,
   ContactForm,
-  InfoBox 
+  InfoBox,
+  StatusMessage,
 } from './styles';
 
 export default function AjudaSuporte() {
@@ -17,16 +19,34 @@ export default function AjudaSuporte() {
     telefone: '',
     mensagem: ''
   });
+  const [enviando, setEnviando] = useState(false);
+  const [status, setStatus] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setMsgData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSend = (e) => {
+  const handleSend = async (e) => {
     e.preventDefault();
-    console.log("Mensagem de suporte:", msgData);
-    alert("Sua mensagem foi enviada! Responderemos em breve.");
+
+    if (!msgData.nome || !msgData.email || !msgData.mensagem) {
+      setStatus({ tipo: 'erro', texto: 'Preencha nome, e-mail e a mensagem antes de enviar.' });
+      return;
+    }
+
+    setStatus(null);
+    setEnviando(true);
+    try {
+      await api.post('/suporte', msgData);
+      setStatus({ tipo: 'ok', texto: 'Sua mensagem foi enviada! Responderemos em breve.' });
+      setMsgData({ nome: '', email: '', telefone: '', mensagem: '' });
+    } catch (err) {
+      console.error('Erro ao enviar mensagem de suporte:', err);
+      setStatus({ tipo: 'erro', texto: 'Não foi possível enviar sua mensagem. Tente novamente.' });
+    } finally {
+      setEnviando(false);
+    }
   };
 
   return (
@@ -46,16 +66,19 @@ export default function AjudaSuporte() {
                 <input 
                   name="nome"
                   placeholder="Nome Completo" 
+                  value={msgData.nome}
                   onChange={handleChange}
                 />
                 <input 
                   name="email"
                   placeholder="E-mail" 
+                  value={msgData.email}
                   onChange={handleChange}
                 />
                 <input 
                   name="telefone"
                   placeholder="(99) 9999-9999" 
+                  value={msgData.telefone}
                   onChange={handleChange}
                 />
               </div>
@@ -65,11 +88,16 @@ export default function AjudaSuporte() {
                 <textarea 
                   name="mensagem"
                   rows="8"
+                  value={msgData.mensagem}
                   onChange={handleChange}
                 />
               </div>
 
-              <button type="submit">Enviar</button>
+              {status && <StatusMessage tipo={status.tipo}>{status.texto}</StatusMessage>}
+
+              <button type="submit" disabled={enviando}>
+                {enviando ? 'Enviando...' : 'Enviar'}
+              </button>
             </ContactForm>
 
             <InfoBox>

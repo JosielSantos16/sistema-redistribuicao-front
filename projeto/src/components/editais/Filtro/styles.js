@@ -20,6 +20,7 @@ export const FilterGrid = styled.div`
   padding: 20px;
   gap: 15px;
   align-items: center;
+  flex-wrap: wrap;
 
   select {
     flex: 1;
@@ -42,6 +43,29 @@ export const FilterGrid = styled.div`
     align-items: center;
     gap: 8px;
     &:hover { background-color: #e65a00; }
+  }
+
+  @media (max-width: 900px) {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 16px;
+
+    > div {
+      width: 100%;
+    }
+
+    select, button, > div:last-child {
+      width: 100%;
+    }
+
+    > div:last-child {
+      display: flex;
+      gap: 10px;
+
+      button {
+        flex: 1;
+      }
+    }
   }
 `;
 

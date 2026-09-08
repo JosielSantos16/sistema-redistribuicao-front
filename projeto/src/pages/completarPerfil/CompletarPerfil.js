@@ -27,7 +27,6 @@ export default function CompletarPerfil() {
     departamento: '',
     curso: '',
     cargo: '',
-    interesse_redistribuicao: false,
     estado_destino: '',
     comprovante: null,
   });
@@ -39,7 +38,7 @@ export default function CompletarPerfil() {
       setErro("Preencha todos os campos obrigatórios antes de continuar.");
       return false;
     }
-    if (formData.interesse_redistribuicao && !formData.estado_destino) {
+    if (!formData.estado_destino) {
       setErro("Selecione o estado de destino desejado.");
       return false;
     }
@@ -75,10 +74,7 @@ export default function CompletarPerfil() {
       payload.append('curso', formData.curso);
       payload.append('cargo', formData.cargo);
       payload.append('lattes', formData.lattes || '');
-      payload.append('interesse_redistribuicao', formData.interesse_redistribuicao);
-      if (formData.interesse_redistribuicao) {
-        payload.append('estado_destino', formData.estado_destino);
-      }
+      payload.append('estado_destino', formData.estado_destino);
       payload.append('comprovante', formData.comprovante);
 
       await api.put('/profile', payload, {

@@ -9,7 +9,57 @@ export const PageLayout = styled.div`
 export const MainContent = styled.main`
   flex: 1;
   padding: 40px 60px;
+  min-width: 0;
   h1 { color: #001858; margin-bottom: 30px; font-size: 24px; }
+
+  @media (max-width: 1200px) {
+    padding: 32px 40px;
+  }
+
+  @media (max-width: 900px) {
+    /* padding-top maior pra não ficar embaixo do botão hambúrguer fixo */
+    padding: 90px 24px 24px;
+    h1 { font-size: 20px; margin-bottom: 20px; }
+  }
+
+  @media (max-width: 480px) {
+    padding: 84px 16px 16px;
+  }
+`;
+
+export const HeaderRow = styled.header`
+  margin-bottom: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+
+  @media (max-width: 700px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+`;
+
+export const SyncButton = styled.button`
+  background-color: #FF6600;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
+  opacity: ${props => props.disabled ? 0.7 : 1};
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  white-space: nowrap;
+
+  @media (max-width: 700px) {
+    width: 100%;
+    padding: 12px 20px;
+  }
 `;
 
 export const PaginationBar = styled.div`

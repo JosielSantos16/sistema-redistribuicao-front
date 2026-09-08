@@ -133,3 +133,13 @@ export const ActionButton = styled.button`
   cursor: pointer;
   &.orange { background: #ff6600; }
 `;
+export const StatusMessage = styled.div`
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  margin-top: 10px;
+  background-color: ${props => props.tipo === "ok" ? "#F0FFF4" : "#FFF5F5"};
+  color: ${props => props.tipo === "ok" ? "#16a34a" : "#E53E3E"};
+  border: 1px solid ${props => props.tipo === "ok" ? "#9AE6B4" : "#FC8181"};
+`;

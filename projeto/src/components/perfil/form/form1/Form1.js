@@ -5,8 +5,6 @@ import {
   FormGrid,
   GridItem,
   Input,
-  ToggleRow,
-  ToggleSwitch,
 } from "./styles";
 
 import listaUniversidadesJSON from "../../../../data/universidades-br.json";
@@ -184,51 +182,27 @@ export default function Form1({ data, setData }) {
           </select>
         </GridItem>
 
-        {/* Isso é o que realmente alimenta o Mapa de Interesse e a Busca
-            de Perfis — antes esse espaço tinha um campo de "preferências"
-            (cidades soltas via BrasilAPI) que não batia com nada que o
-            backend usa de verdade. */}
-        <GridItem className="interesse">
-          <ToggleRow>
-            <ToggleSwitch>
-              <input
-                type="checkbox"
-                checked={!!data.interesse_redistribuicao}
-                onChange={(e) =>
-                  setData((prev) => ({
-                    ...prev,
-                    interesse_redistribuicao: e.target.checked,
-                    estado_destino: e.target.checked ? prev.estado_destino : "",
-                  }))
-                }
-              />
-              <span className="slider" />
-            </ToggleSwitch>
-            <span className="toggle-label">
-              Tenho interesse em redistribuição/remoção
-            </span>
-          </ToggleRow>
+        {/* Todo usuário desta plataforma já tem, por definição, interesse
+            em redistribuição/remoção — é o propósito do sistema. Por isso
+            não existe mais um toggle pra "escolher" isso; só pedimos direto
+            o estado de destino, que é o dado que realmente falta. */}
+        <GridItem className="estadoDestino">
+          <Select
+            options={opcoesEstados}
+            value={
+              data.estado_destino
+                ? opcoesEstados.find((o) => o.value === data.estado_destino)
+                : null
+            }
+            onChange={(opt) =>
+              setData((prev) => ({ ...prev, estado_destino: opt?.value || "" }))
+            }
+            placeholder="Estado de destino desejado"
+            styles={customStyles}
+            isClearable
+            noOptionsMessage={() => "Estado não encontrado"}
+          />
         </GridItem>
-
-        {data.interesse_redistribuicao && (
-          <GridItem className="estadoDestino">
-            <Select
-              options={opcoesEstados}
-              value={
-                data.estado_destino
-                  ? opcoesEstados.find((o) => o.value === data.estado_destino)
-                  : null
-              }
-              onChange={(opt) =>
-                setData((prev) => ({ ...prev, estado_destino: opt?.value || "" }))
-              }
-              placeholder="Estado de destino desejado"
-              styles={customStyles}
-              isClearable
-              noOptionsMessage={() => "Estado não encontrado"}
-            />
-          </GridItem>
-        )}
       </FormGrid>
     </FormSection>
   );

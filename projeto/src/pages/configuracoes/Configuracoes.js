@@ -1,17 +1,156 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Sidebar from '../../components/sidebar/Sidebar';
+import api from '../../services/api';
+import { useNavigate } from 'react-router-dom';
 import { 
-  User, Lock, Bell, Eye, MapPin, 
+  User, Lock, Bell, MapPin, 
   Download, Trash2, ShieldCheck, Mail 
 } from 'lucide-react';
 import { 
   MainContainer, ContentArea, Banner, SettingsGrid, 
-  SettingCard, ActionButton, ToggleSwitch, StatusBadge 
+  SettingCard, ActionButton, ToggleSwitch, StatusBadge, StatusMessage
 } from './styles';
 
+function tokenHeader() {
+  const token = localStorage.getItem('@Wolf:token');
+  return { Authorization: `Bearer ${token}` };
+}
+
 export default function Configuracoes() {
-  const [matchNotify, setMatchNotify] = useState(true);
-  const [mapVisible, setMapVisible] = useState(true);
+  const navigate = useNavigate();
+
+  const [carregando, setCarregando] = useState(true);
+  const [email, setEmail] = useState('');
+
+  const [visivelBusca, setVisivelBusca] = useState(true);
+  const [notificarMatch, setNotificarMatch] = useState(true);
+  const [notificarEdital, setNotificarEdital] = useState(true);
+
+  const [senhaAtual, setSenhaAtual] = useState('');
+  const [novaSenha, setNovaSenha] = useState('');
+  const [salvandoSenha, setSalvandoSenha] = useState(false);
+  const [msgSenha, setMsgSenha] = useState(null);
+
+  const [exportando, setExportando] = useState(false);
+  const [excluindo, setExcluindo] = useState(false);
+  const [msgLgpd, setMsgLgpd] = useState(null);
+
+  useEffect(() => {
+    async function carregar() {
+      try {
+        const { data } = await api.get('/profile', { headers: tokenHeader() });
+        setEmail(data.email || '');
+        setVisivelBusca(data.visivel_busca !== false);
+        setNotificarMatch(data.notificar_email_match !== false);
+        setNotificarEdital(data.notificar_email_edital !== false);
+      } catch (err) {
+        console.error('Erro ao carregar configurações:', err);
+      } finally {
+        setCarregando(false);
+      }
+    }
+    carregar();
+  }, []);
+
+  const salvarPreferencia = async (campo, valor) => {
+    try {
+      await api.put('/profile/configuracoes', { [campo]: valor }, { headers: tokenHeader() });
+    } catch (err) {
+      console.error('Erro ao salvar preferência:', err);
+      alert('Não foi possível salvar essa preferência. Tente novamente.');
+    }
+  };
+
+  const toggleVisivel = () => {
+    const novo = !visivelBusca;
+    setVisivelBusca(novo);
+    salvarPreferencia('visivel_busca', novo);
+  };
+
+  const toggleNotificarMatch = () => {
+    const novo = !notificarMatch;
+    setNotificarMatch(novo);
+    salvarPreferencia('notificar_email_match', novo);
+  };
+
+  const toggleNotificarEdital = () => {
+    const novo = !notificarEdital;
+    setNotificarEdital(novo);
+    salvarPreferencia('notificar_email_edital', novo);
+  };
+
+  const handleAtualizarSenha = async (e) => {
+    e.preventDefault();
+    setMsgSenha(null);
+
+    if (!senhaAtual || !novaSenha) {
+      setMsgSenha({ tipo: 'erro', texto: 'Preencha a senha atual e a nova senha.' });
+      return;
+    }
+
+    setSalvandoSenha(true);
+    try {
+      await api.put('/profile/senha', { senhaAtual, novaSenha }, { headers: tokenHeader() });
+      setMsgSenha({ tipo: 'ok', texto: 'Senha atualizada com sucesso!' });
+      setSenhaAtual('');
+      setNovaSenha('');
+    } catch (err) {
+      setMsgSenha({ tipo: 'erro', texto: err.response?.data?.error || 'Erro ao atualizar senha.' });
+    } finally {
+      setSalvandoSenha(false);
+    }
+  };
+
+  const handleExportar = async () => {
+    setExportando(true);
+    setMsgLgpd(null);
+    try {
+      const { data } = await api.get('/profile/exportar', { headers: tokenHeader() });
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'meus-dados-wolf.json';
+      link.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Erro ao exportar dados:', err);
+      setMsgLgpd({ tipo: 'erro', texto: 'Não foi possível exportar seus dados.' });
+    } finally {
+      setExportando(false);
+    }
+  };
+
+  const handleExcluir = async () => {
+    const senha = window.prompt(
+      'Essa ação é irreversível: seus dados de identificação serão anonimizados e você não conseguirá mais entrar na conta.\n\nDigite sua senha atual para confirmar:'
+    );
+    if (!senha) return;
+
+    setExcluindo(true);
+    setMsgLgpd(null);
+    try {
+      await api.delete('/profile', { headers: tokenHeader(), data: { senha } });
+      localStorage.removeItem('@Wolf:token');
+      localStorage.removeItem('@Wolf:perfilCache');
+      navigate('/');
+    } catch (err) {
+      setMsgLgpd({ tipo: 'erro', texto: err.response?.data?.error || 'Não foi possível excluir a conta.' });
+    } finally {
+      setExcluindo(false);
+    }
+  };
+
+  if (carregando) {
+    return (
+      <MainContainer>
+        <Sidebar />
+        <ContentArea>
+          <p style={{ padding: 40, color: '#64748b' }}>Carregando configurações...</p>
+        </ContentArea>
+      </MainContainer>
+    );
+  }
 
   return (
     <MainContainer>
@@ -22,73 +161,76 @@ export default function Configuracoes() {
         </Banner>
 
         <SettingsGrid>
-          {/* CARD: SEGURANÇA E ACESSO */}
-          <SettingCard>
+
+          <SettingCard as="form" onSubmit={handleAtualizarSenha}>
             <div className="card-header">
               <Lock size={20} />
               <h2>Segurança da Conta</h2>
             </div>
             <div className="form-group">
-              <label>E-mail Institucional</label>
-              <input type="text" value="josiel.prof@ufopa.edu.br" disabled />
+              <label>E-mail</label>
+              <input type="text" value={email} disabled />
               <StatusBadge>E-mail Verificado</StatusBadge>
-              
+
+              <label>Senha atual</label>
+              <input
+                type="password"
+                placeholder="Digite sua senha atual"
+                value={senhaAtual}
+                onChange={(e) => setSenhaAtual(e.target.value)}
+              />
+
               <label>Nova Senha</label>
-              <input type="password" placeholder="Digite para alterar" />
+              <input
+                type="password"
+                placeholder="Mínimo 8 caracteres, com letras e números"
+                value={novaSenha}
+                onChange={(e) => setNovaSenha(e.target.value)}
+              />
             </div>
-            <ActionButton>Atualizar Credenciais</ActionButton>
+            {msgSenha && <StatusMessage tipo={msgSenha.tipo}>{msgSenha.texto}</StatusMessage>}
+            <ActionButton type="submit" disabled={salvandoSenha} style={{ marginTop: 12 }}>
+              {salvandoSenha ? 'Salvando...' : 'Atualizar Credenciais'}
+            </ActionButton>
           </SettingCard>
 
-          {/* CARD: VISIBILIDADE NO MAPA (O CORE DO WOLF) */}
           <SettingCard>
             <div className="card-header">
               <MapPin size={20} />
-              <h2>Privacidade no Mapa</h2>
+              <h2>Privacidade na Busca</h2>
             </div>
-            <p className="description">Defina como outros docentes visualizam seu interesse de remoção.</p>
+            <p className="description">Defina se outros docentes conseguem te encontrar na Busca de Perfis.</p>
             
             <div className="toggle-item">
               <div>
                 <strong>Modo Público</strong>
-                <p>Seu perfil aparece nas buscas de permuta.</p>
+                <p>Seu perfil aparece nas buscas de outros usuários.</p>
               </div>
-              <ToggleSwitch active={mapVisible} onClick={() => setMapVisible(!mapVisible)} />
+              <ToggleSwitch active={visivelBusca} onClick={toggleVisivel} />
             </div>
-
-            <div className="form-group" style={{marginTop: '15px'}}>
-              <label>Raio de busca automática (km)</label>
-              <select>
-                <option>50 km</option>
-                <option>100 km</option>
-                <option>Todo o Brasil</option>
-              </select>
-            </div>
-            <ActionButton className="orange">Salvar Localização</ActionButton>
           </SettingCard>
 
-          {/* CARD: NOTIFICAÇÕES DE MATCH */}
           <SettingCard>
             <div className="card-header">
               <Bell size={20} />
-              <h2>Alertas de Match</h2>
+              <h2>Alertas por E-mail</h2>
             </div>
             <div className="toggle-item">
               <div>
-                <strong>Avisar por E-mail</strong>
-                <p>Notificar quando houver docente compatível.</p>
+                <strong>Pedidos de Match</strong>
+                <p>Avisar quando alguém demonstrar interesse ou aceitar seu pedido.</p>
               </div>
-              <ToggleSwitch active={matchNotify} onClick={() => setMatchNotify(!matchNotify)} />
+              <ToggleSwitch active={notificarMatch} onClick={toggleNotificarMatch} />
             </div>
             <div className="toggle-item">
               <div>
-                <strong>Alertas no Navegador</strong>
-                <p>Exibir pop-ups de novas mensagens.</p>
+                <strong>Editais Novos</strong>
+                <p>Avisar quando surgir um edital novo pro seu estado/instituição.</p>
               </div>
-              <ToggleSwitch active={false} />
+              <ToggleSwitch active={notificarEdital} onClick={toggleNotificarEdital} />
             </div>
           </SettingCard>
 
-          {/* CARD: PRIVACIDADE E DADOS (LGPD) */}
           <SettingCard>
             <div className="card-header">
               <ShieldCheck size={20} />
@@ -96,9 +238,14 @@ export default function Configuracoes() {
             </div>
             <p className="description">O WOLF respeita sua privacidade. Baixe seus dados ou encerre sua conta.</p>
             <div className="action-row">
-              <button className="outline-btn"><Download size={16}/> Exportar Dados</button>
-              <button className="danger-btn"><Trash2 size={16}/> Excluir Conta</button>
+              <button type="button" className="outline-btn" onClick={handleExportar} disabled={exportando}>
+                <Download size={16}/> {exportando ? 'Exportando...' : 'Exportar Dados'}
+              </button>
+              <button type="button" className="danger-btn" onClick={handleExcluir} disabled={excluindo}>
+                <Trash2 size={16}/> {excluindo ? 'Excluindo...' : 'Excluir Conta'}
+              </button>
             </div>
+            {msgLgpd && <StatusMessage tipo={msgLgpd.tipo}>{msgLgpd.texto}</StatusMessage>}
           </SettingCard>
         </SettingsGrid>
       </ContentArea>

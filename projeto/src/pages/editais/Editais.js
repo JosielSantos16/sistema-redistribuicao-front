@@ -10,6 +10,8 @@ import {
   PageLayout,
   MainContent,
   PaginationBar,
+  HeaderRow,
+  SyncButton,
 } from "./styles";
 
 const ESTADO_INICIAL = { editais: [], total: 0, pagina: 1, totalPaginas: 1 };
@@ -17,16 +19,23 @@ const ESTADO_INICIAL = { editais: [], total: 0, pagina: 1, totalPaginas: 1 };
 export default function Editais() {
   const [loading, setLoading] = useState(true);
   const [dados, setDados] = useState(ESTADO_INICIAL);
+  // Guarda o último filtro usado, pra paginação (Anterior/Próxima) poder
+  // pedir a próxima página SEM perder o filtro que já estava aplicado.
   const [filtrosAtuais, setFiltrosAtuais] = useState({});
 
+  // Estado GLOBAL (sobrevive à troca de página) — antes disso, sair da
+  // tela de Editais enquanto sincronizava fazia a tela "esquecer" que
+  // ainda estava rodando, mesmo que o servidor continuasse trabalhando.
   const { sincronizando, ultimoResultado, naoVisualizado, iniciarSincronizacao, marcarComoVisto } = useSync();
   const sincronizandoAnterior = useRef(sincronizando);
 
   const location = useLocation();
   const estadoVindoDoMapa = location.state?.filtroEstado;
 
+  // Entrar na tela já marca o resultado da última sincronização como visto
   useEffect(() => {
     marcarComoVisto();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -35,13 +44,18 @@ export default function Editais() {
     } else {
       buscarEditais({ pagina: 1 });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [estadoVindoDoMapa]);
 
+  // Se uma sincronização (disparada aqui ou em outra tela) TERMINAR
+  // enquanto o usuário está olhando essa página, recarrega a lista
+  // automaticamente pra já mostrar os dados novos.
   useEffect(() => {
     if (sincronizandoAnterior.current && !sincronizando) {
       buscarEditais({ manterFiltroAtual: true, pagina: 1 });
     }
     sincronizandoAnterior.current = sincronizando;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sincronizando]);
 
   // Busca os dados reais salvos no MongoDB, com filtro E paginação
@@ -71,6 +85,7 @@ export default function Editais() {
         desc: `${item.categoria} publicado pela ${item.orgao}/${item.instituicao}.`,
         link: item.url_documento,
         capturadoEm: item.capturado_em,
+        dataPublicacao: item.data_publicacao,
       }));
 
       setDados({
@@ -95,7 +110,7 @@ export default function Editais() {
     <PageLayout>
       <Sidebar />
       <MainContent>
-        <header style={{ marginBottom: '30px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <HeaderRow>
           <div>
             <h1>Editais Identificados</h1>
             <p style={{ color: '#718096', display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -111,28 +126,11 @@ export default function Editais() {
             )}
           </div>
 
-          <button
-            onClick={iniciarSincronizacao}
-            disabled={sincronizando}
-            style={{
-              backgroundColor: '#FF6600',
-              color: 'white',
-              border: 'none',
-              padding: '10px 20px',
-              borderRadius: '6px',
-              fontWeight: '600',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              cursor: sincronizando ? 'not-allowed' : 'pointer',
-              opacity: sincronizando ? 0.7 : 1,
-              boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-            }}
-          >
+          <SyncButton onClick={iniciarSincronizacao} disabled={sincronizando}>
             <RefreshCw size={16} className={sincronizando ? "animate-spin" : ""} />
             {sincronizando ? "Sincronizando..." : "Sincronizar Portal PROGEP"}
-          </button>
-        </header>
+          </SyncButton>
+        </HeaderRow>
 
         {sincronizando && (
           <div style={{

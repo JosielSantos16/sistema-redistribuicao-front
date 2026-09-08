@@ -22,7 +22,11 @@ export default function ResultadoEdital({ edital }) {
             {edital.desc}
           </p>
 
-          {edital.capturadoEm && (
+          {edital.dataPublicacao ? (
+            <PeriodoTag className="data-real">
+              Publicado em: {new Date(edital.dataPublicacao).toLocaleDateString('pt-BR')}
+            </PeriodoTag>
+          ) : edital.capturadoEm && (
             <PeriodoTag>
               Encontrado por nosso sistema em: {new Date(edital.capturadoEm).toLocaleDateString('pt-BR')}
             </PeriodoTag>

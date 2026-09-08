@@ -5,21 +5,11 @@ import Usuario from "../../assets/usuario.png";
 import api from "../../services/api";
 import { resolverFotoUrl } from "../../utils/mediaUrl";
 import { useSync } from "../../contexts/SyncContext";
+import { usePerfil } from "../../contexts/PerfilContext";
 import {
   Map, Search, FileText, User, Bell, Users, 
   HelpCircle, Shield, Settings, LogOut, Camera, Menu, X, RefreshCw
 } from "lucide-react";
-
-const CACHE_KEY = "@Wolf:perfilCache";
-
-function lerCache() {
-  try {
-    const bruto = localStorage.getItem(CACHE_KEY);
-    return bruto ? JSON.parse(bruto) : {};
-  } catch {
-    return {};
-  }
-}
 
 function tokenHeader() {
   const token = localStorage.getItem("@Wolf:token");
@@ -32,10 +22,9 @@ export default function Sidebar() {
   const isActive = (path) => location.pathname === path;
 
   const fileInputRef = useRef(null);
-  const cache = lerCache();
 
-  const [nome, setNome] = useState(cache.nome || "Usuário");
-  const [fotoUrl, setFotoUrl] = useState(cache.fotoUrl || null);
+  const { nome, fotoUrl, atualizarPerfil } = usePerfil();
+
   const [enviandoFoto, setEnviandoFoto] = useState(false);
   const [menuAberto, setMenuAberto] = useState(false);
   const [totalNotificacoes, setTotalNotificacoes] = useState(0);
@@ -45,25 +34,15 @@ export default function Sidebar() {
     async function carregarPerfil() {
       try {
         const { data } = await api.get("/profile", { headers: tokenHeader() });
-
-        const nomeFinal = data.name || "Usuário";
-        const fotoFinal = resolverFotoUrl(data.foto_url);
-
-        setNome(nomeFinal);
-        setFotoUrl(fotoFinal);
-
-        localStorage.setItem(
-          CACHE_KEY,
-          JSON.stringify({ nome: nomeFinal, fotoUrl: fotoFinal })
-        );
+        atualizarPerfil({
+          nome: data.name || "Usuário",
+          fotoUrl: resolverFotoUrl(data.foto_url),
+        });
       } catch (err) {
         console.error("Erro ao carregar dados do usuário:", err);
       }
     }
 
-    // O número do sino é a soma de duas coisas: pedidos de match esperando
-    // resposta, e mensagens que chegaram em conversas já confirmadas e
-    // você ainda não abriu.
     async function carregarNotificacoes() {
       try {
         const [respRecebidos, respConfirmados] = await Promise.all([
@@ -110,7 +89,7 @@ export default function Sidebar() {
     }
 
     const previewUrl = URL.createObjectURL(file);
-    setFotoUrl(previewUrl);
+    atualizarPerfil({ fotoUrl: previewUrl });
     setEnviandoFoto(true);
 
     try {
@@ -121,9 +100,7 @@ export default function Sidebar() {
         headers: tokenHeader(),
       });
 
-      const fotoFinal = resolverFotoUrl(data.foto_url);
-      setFotoUrl(fotoFinal);
-      localStorage.setItem(CACHE_KEY, JSON.stringify({ nome, fotoUrl: fotoFinal }));
+      atualizarPerfil({ fotoUrl: resolverFotoUrl(data.foto_url) });
     } catch (err) {
       console.error("Erro ao enviar foto:", err);
       alert("Não foi possível atualizar a foto. Tente novamente.");

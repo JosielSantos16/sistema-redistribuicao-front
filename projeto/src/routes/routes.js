@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { SyncProvider } from "../contexts/SyncContext";
+import { PerfilProvider } from "../contexts/PerfilContext";
 import Home from "../pages/home/Home";
 import Cadastro from "../pages/cadastro/Cadastro";
 import VerificarEmail from "../pages/verificarEmail/VerificarEmail";
@@ -26,6 +27,7 @@ function AppRoutes() {
   return (
     <Router>
       <SyncProvider>
+      <PerfilProvider>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/cadastro" element={<Cadastro />} />
@@ -50,6 +52,7 @@ function AppRoutes() {
             <PrivateRoute> <Perfil /> </PrivateRoute>
           } />
         </Routes>
+      </PerfilProvider>
       </SyncProvider>
     </Router>
   );

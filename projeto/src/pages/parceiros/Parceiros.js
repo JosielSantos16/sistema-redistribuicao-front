@@ -1,18 +1,37 @@
 import React, { useState } from 'react';
 import { Users, Handshake, Globe, Send, ShieldCheck } from 'lucide-react';
 import Sidebar from '../../components/sidebar/Sidebar';
+import api from '../../services/api';
 import { 
   MainLayout, Container, Banner, Content, InfoGrid, 
   InfoCard, ActionSection, PartnerForm, SectionHeader,
-  Badge
+  Badge, StatusMessage
 } from './styles';
 
 export default function Parceiros() {
   const [formData, setFormData] = useState({ nome: '', email: '', proposta: '' });
+  const [enviando, setEnviando] = useState(false);
+  const [mensagem, setMensagem] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setMensagem(null);
+    setEnviando(true);
+    try {
+      await api.post('/parcerias', formData);
+      setMensagem({ tipo: 'ok', texto: 'Proposta enviada com sucesso! Vamos analisar e entrar em contato.' });
+      setFormData({ nome: '', email: '', proposta: '' });
+    } catch (err) {
+      console.error('Erro ao enviar proposta:', err);
+      setMensagem({ tipo: 'erro', texto: 'Não foi possível enviar sua proposta. Tente novamente.' });
+    } finally {
+      setEnviando(false);
+    }
   };
 
   return (
@@ -55,15 +74,15 @@ export default function Parceiros() {
               <p>Sua parceria ajuda a democratizar a mobilidade docente no serviço público federal.</p>
             </SectionHeader>
 
-            <PartnerForm onSubmit={(e) => { e.preventDefault(); alert("Proposta enviada!"); }}>
+            <PartnerForm onSubmit={handleSubmit}>
               <div className="input-group">
                 <label>Nome Completo</label>
-                <input name="nome" type="text" placeholder="Ex: Josiel Santos" required onChange={handleChange} />
+                <input name="nome" type="text" placeholder="Ex: Josiel Santos" required value={formData.nome} onChange={handleChange} />
               </div>
 
               <div className="input-group">
                 <label>E-mail Institucional (@ufopa.edu.br)</label>
-                <input name="email" type="email" placeholder="nome@instituicao.edu.br" required onChange={handleChange} />
+                <input name="email" type="email" placeholder="nome@instituicao.edu.br" required value={formData.email} onChange={handleChange} />
               </div>
               
               <div className="full-width">
@@ -73,12 +92,15 @@ export default function Parceiros() {
                   placeholder="Como você imagina colaborar com o crescimento do WOLF em sua região?" 
                   rows="5" 
                   required
+                  value={formData.proposta}
                   onChange={handleChange}
                 />
               </div>
 
-              <button type="submit">
-                <Send size={18} /> Enviar Proposta para Análise
+              {mensagem && <StatusMessage tipo={mensagem.tipo}>{mensagem.texto}</StatusMessage>}
+
+              <button type="submit" disabled={enviando}>
+                <Send size={18} /> {enviando ? 'Enviando...' : 'Enviar Proposta para Análise'}
               </button>
             </PartnerForm>
           </ActionSection>
