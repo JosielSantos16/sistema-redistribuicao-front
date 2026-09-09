@@ -11,11 +11,6 @@ import {
 } from "./styles";
 import { MapPin, MousePointerClick, Info } from "lucide-react";
 
-// "section" permite renderizar só um pedaço do bloco de texto: "intro"
-// (badge+título+parágrafo) ou "actions" (legenda+botões). Serve pra Home
-// poder posicionar o mapa ENTRE os dois pedaços no mobile via CSS Grid,
-// sem duplicar nenhum componente. Por padrão ("full") renderiza tudo junto,
-// exatamente como antes — é assim que a tela de Mapa (logada) continua usando.
 export default function InfoSection({ isHome, section = "full", style }) {
   const navigate = useNavigate();
 

@@ -1,8 +1,8 @@
 import styled from 'styled-components';
 
 export const Div = styled.div`
-  width: 100%;
-  max-width: 620px;
+  flex: 0 1 620px;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -27,29 +27,14 @@ export const Div = styled.div`
   }
 
   @media (max-width: 900px) {
-    max-width: none;
-    order: ${props => props.$section === 'actions' ? 2 : 0};
+    flex-basis: auto;
 
-    h1 {
-      font-size: 32px;
-      margin-bottom: 14px;
-    }
-
-    p {
-      font-size: 16px;
-      max-width: 100%;
-      margin-bottom: 22px;
-    }
+    h1 { font-size: 38px; }
+    p { font-size: 16px; max-width: 100%; }
   }
 
-  @media (max-width: 480px) {
-    h1 {
-      font-size: 27px;
-    }
-
-    p {
-      font-size: 15px;
-    }
+  @media (max-width: 420px) {
+    h1 { font-size: 30px; }
   }
 `;
 
@@ -75,28 +60,13 @@ export const WelcomeBadge = styled.span`
     background: #FF6600;
     flex-shrink: 0;
   }
-
-  @media (max-width: 900px) {
-    align-self: center;
-    margin-bottom: 14px;
-  }
 `;
 
-// No mobile, os botões aparecem ANTES da legenda (ordem visual, sem mudar o
-// JSX) e ficam empilhados em largura total — ação principal visível sem
-// precisar rolar por toda a legenda primeiro.
 export const ButtonRow = styled.div`
   display: flex;
   gap: 16px;
   margin-top: 8px;
   flex-wrap: wrap;
-
-  @media (max-width: 900px) {
-    order: 1;
-    flex-direction: column;
-    margin-top: 4px;
-    margin-bottom: 28px;
-  }
 `;
 
 export const Button = styled.button`
@@ -118,11 +88,6 @@ export const Button = styled.button`
     filter: brightness(1.12);
     transform: translateY(-2px);
   }
-
-  @media (max-width: 900px) {
-    width: 100%;
-    padding: 15px 20px;
-  }
 `;
 
 export const LegendGrid = styled.div`
@@ -130,11 +95,6 @@ export const LegendGrid = styled.div`
   grid-template-columns: 1fr 1fr;
   gap: 16px;
   margin-bottom: 8px;
-
-  @media (max-width: 900px) {
-    order: 2;
-    gap: 12px 10px;
-  }
 `;
 
 export const LegendItem = styled.div`
@@ -148,17 +108,6 @@ export const LegendItem = styled.div`
     color: var(--cor-texto-suave); 
     line-height: 1.4;
     padding-top: 6px;
-  }
-
-  @media (max-width: 900px) {
-    gap: 8px;
-
-    span {
-      font-size: 12.5px;
-      max-width: none;
-      line-height: 1.35;
-      padding-top: 4px;
-    }
   }
 `;
 
@@ -176,20 +125,5 @@ export const IconChip = styled.div`
   strong {
     font-family: var(--fonte-display);
     font-size: 15px;
-  }
-
-  @media (max-width: 900px) {
-    width: 30px;
-    height: 30px;
-    border-radius: 9px;
-
-    strong {
-      font-size: 12px;
-    }
-
-    svg {
-      width: 15px;
-      height: 15px;
-    }
   }
 `;
