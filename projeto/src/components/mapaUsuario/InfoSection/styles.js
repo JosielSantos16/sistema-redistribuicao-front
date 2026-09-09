@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 export const Div = styled.div`
-  flex: 0 1 620px;
+  width: 100%;
   min-width: 0;
   display: flex;
   flex-direction: column;
@@ -27,8 +27,6 @@ export const Div = styled.div`
   }
 
   @media (max-width: 900px) {
-    flex-basis: auto;
-
     h1 { font-size: 38px; }
     p { font-size: 16px; max-width: 100%; }
   }

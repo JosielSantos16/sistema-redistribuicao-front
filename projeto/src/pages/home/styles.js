@@ -31,7 +31,7 @@ export const Main = styled.main`
   }
 `;
 
-export const ContentRow = styled.div`
+export const HeroRow = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center; 
@@ -43,5 +43,17 @@ export const ContentRow = styled.div`
     flex-direction: column;
     align-items: stretch;
     gap: 32px;
+  }
+`;
+
+export const TextWrapper = styled.div`
+  flex: 0 1 620px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  @media (max-width: 900px) {
+    flex-basis: auto;
   }
 `;
