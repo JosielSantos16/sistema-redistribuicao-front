@@ -18,17 +18,19 @@ import {
   MessageInputRow,
 } from './styles';
 
+const INTERVALO_POLLING_MS = 4000;
+
 function tokenHeader() {
   const token = localStorage.getItem('@Wolf:token');
   return { Authorization: `Bearer ${token}` };
 }
 
 export default function Notificacoes() {
-  const [aba, setAba] = useState('recebidos'); // recebidos | confirmados
+  const [aba, setAba] = useState('recebidos'); 
   const [recebidos, setRecebidos] = useState([]);
   const [confirmados, setConfirmados] = useState([]);
   const [carregando, setCarregando] = useState(true);
-  const [conversaAberta, setConversaAberta] = useState(null); // matchId ou null
+  const [conversaAberta, setConversaAberta] = useState(null); 
   const [mensagens, setMensagens] = useState([]);
   const [novaMensagem, setNovaMensagem] = useState('');
   const [perfilSelecionado, setPerfilSelecionado] = useState(null);
@@ -53,13 +55,29 @@ export default function Notificacoes() {
     carregarTudo();
   }, [carregarTudo]);
 
+  useEffect(() => {
+    if (!conversaAberta) return;
+
+    const intervalo = setInterval(async () => {
+      try {
+        const { data } = await api.get(`/matches/${conversaAberta}/mensagens`, {
+          headers: tokenHeader(),
+        });
+        setMensagens(data);
+      } catch (err) {
+        console.error('Erro ao atualizar mensagens:', err);
+      }
+    }, INTERVALO_POLLING_MS);
+
+    return () => clearInterval(intervalo);
+  }, [conversaAberta]);
+
   const responder = async (id, acao) => {
     try {
       await api.put(`/matches/${id}/${acao}`, {}, { headers: tokenHeader() });
-      // Some da lista de recebidos na hora, sem esperar recarregar tudo
       setRecebidos((prev) => prev.filter((r) => r.id !== id));
       if (acao === 'aceitar') {
-        carregarTudo(); // atualiza a lista de confirmados também
+        carregarTudo();
       }
     } catch (err) {
       console.error(`Erro ao ${acao} solicitação:`, err);
@@ -78,9 +96,6 @@ export default function Notificacoes() {
         headers: tokenHeader(),
       });
       setMensagens(data);
-      // Abrir a conversa já marcou como lida no backend — atualiza a
-      // lista local também, pra sumir o indicador na hora, sem esperar
-      // recarregar tudo de novo.
       setConfirmados((prev) =>
         prev.map((m) => (m.matchId === matchId ? { ...m, naoLidas: 0 } : m))
       );

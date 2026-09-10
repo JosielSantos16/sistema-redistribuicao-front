@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { Camera, UploadCloud } from "lucide-react";
+import { Camera, UploadCloud, Trash2 } from "lucide-react";
 import AsyncCreatableSelect from "react-select/async-creatable";
 import Select from "react-select";
 import Sidebar from "../../components/sidebar/Sidebar";
@@ -43,22 +43,18 @@ export default function Perfil() {
   const [carregando, setCarregando] = useState(true);
   const [salvando, setSalvando] = useState(false);
   const [enviandoFoto, setEnviandoFoto] = useState(false);
-  const [mensagem, setMensagem] = useState(null); // { tipo: 'ok'|'erro', texto }
+  const [removendoFoto, setRemovendoFoto] = useState(false);
+  const [mensagem, setMensagem] = useState(null);
 
-  // Nome e foto vêm do Context compartilhado com o menu lateral — assim,
-  // trocar a foto aqui atualiza o Sidebar na hora, sem precisar navegar
-  // pra outra página pra "forçar" a atualização.
   const { nome, fotoUrl, atualizarPerfil } = usePerfil();
 
-  // Dados de identidade — vêm do cadastro original, exibidos mas não
-  // editáveis aqui (mudar CPF/e-mail exige um fluxo próprio de verificação,
-  // não um campo solto num formulário de perfil).
+  const [nomeEditavel, setNomeEditavel] = useState("");
+
   const [cpf, setCpf] = useState("");
   const [email, setEmail] = useState("");
   const [dataNascimento, setDataNascimento] = useState("");
   const [telefone, setTelefone] = useState("");
 
-  // Dados acadêmicos — esses sim são editáveis de verdade.
   const [instituicao, setInstituicao] = useState(null);
   const [departamento, setDepartamento] = useState("");
   const [curso, setCurso] = useState(null);
@@ -74,6 +70,7 @@ export default function Perfil() {
         const { data } = await api.get("/profile", { headers: tokenHeader() });
 
         atualizarPerfil({ nome: data.name || "", fotoUrl: resolverFotoUrl(data.foto_url) });
+        setNomeEditavel(data.name || "");
         setCpf(data.cpf || "");
         setEmail(data.email || "");
         setDataNascimento(data.data_nascimento ? data.data_nascimento.slice(0, 10) : "");
@@ -132,6 +129,23 @@ export default function Perfil() {
     }
   };
 
+  const handleRemoverFoto = async (e) => {
+    e.stopPropagation();
+    if (!fotoUrl) return;
+    if (!window.confirm("Remover sua foto de perfil?")) return;
+
+    setRemovendoFoto(true);
+    try {
+      await api.delete("/profile/foto", { headers: tokenHeader() });
+      atualizarPerfil({ fotoUrl: null });
+    } catch (err) {
+      console.error("Erro ao remover foto:", err);
+      setMensagem({ tipo: "erro", texto: "Não foi possível remover a foto." });
+    } finally {
+      setRemovendoFoto(false);
+    }
+  };
+
   const loadInstituicoes = useCallback((inputValue) => {
     return new Promise((resolve) => {
       const buscaInput = inputValue.toLowerCase().trim();
@@ -166,6 +180,10 @@ export default function Perfil() {
   const handleSalvar = async () => {
     setMensagem(null);
 
+    if (!nomeEditavel || nomeEditavel.trim().length < 3) {
+      setMensagem({ tipo: "erro", texto: "O nome deve ter pelo menos 3 caracteres." });
+      return;
+    }
     if (!instituicao || !departamento || !curso || !cargo) {
       setMensagem({ tipo: "erro", texto: "Preencha instituição, departamento, curso e cargo antes de salvar." });
       return;
@@ -178,6 +196,7 @@ export default function Perfil() {
     setSalvando(true);
     try {
       const payload = new FormData();
+      payload.append("name", nomeEditavel.trim());
       payload.append("instituicao", instituicao.value);
       payload.append("departamento", departamento);
       payload.append("curso", curso.value);
@@ -187,6 +206,9 @@ export default function Perfil() {
       payload.append("estado_destino", estadoDestino.value);
 
       await api.put("/profile", payload, { headers: tokenHeader() });
+
+      atualizarPerfil({ nome: nomeEditavel.trim() });
+
       setMensagem({ tipo: "ok", texto: "Perfil atualizado com sucesso!" });
     } catch (err) {
       const erroServidor = err.response?.data?.error;
@@ -222,20 +244,35 @@ export default function Perfil() {
         <Section>
           <Label>Foto de Perfil:</Label>
           <FormGrid>
-            <UploadArea onClick={handleFotoClick} temFoto={!!fotoUrl}>
-              {fotoUrl ? (
-                <img src={fotoUrl} alt={nome} />
-              ) : (
-                <UploadPlaceholder>
-                  <Camera size={40} color="#94a3b8" />
-                  <p>Clique para adicionar uma foto</p>
-                </UploadPlaceholder>
+            <div>
+              <UploadArea onClick={handleFotoClick} temFoto={!!fotoUrl}>
+                {fotoUrl ? (
+                  <img src={fotoUrl} alt={nome} />
+                ) : (
+                  <UploadPlaceholder>
+                    <Camera size={40} color="#94a3b8" />
+                    <p>Clique para adicionar uma foto</p>
+                  </UploadPlaceholder>
+                )}
+                <div className="overlay">
+                  <UploadCloud size={20} />
+                  <span>{enviandoFoto ? "Enviando..." : "Trocar foto"}</span>
+                </div>
+              </UploadArea>
+
+              {fotoUrl && (
+                <UploadButton
+                  type="button"
+                  onClick={handleRemoverFoto}
+                  disabled={removendoFoto}
+                  style={{ marginTop: 10, backgroundColor: "#fff", color: "#e53e3e", border: "1px solid #fca5a5" }}
+                >
+                  <Trash2 size={14} />
+                  {removendoFoto ? "Removendo..." : "Remover foto"}
+                </UploadButton>
               )}
-              <div className="overlay">
-                <UploadCloud size={20} />
-                <span>{enviandoFoto ? "Enviando..." : "Trocar foto"}</span>
-              </div>
-            </UploadArea>
+            </div>
+
             <input
               ref={fileInputRef}
               type="file"
@@ -246,7 +283,12 @@ export default function Perfil() {
 
             <InputsGroup>
               <InputRow>
-                <Input value={nome} disabled style={{ flex: 2 }} />
+                <Input
+                  value={nomeEditavel}
+                  onChange={(e) => setNomeEditavel(e.target.value)}
+                  placeholder="Nome completo"
+                  style={{ flex: 2 }}
+                />
                 <Input value={cpf} disabled style={{ flex: 1 }} />
               </InputRow>
               <InputRow>
@@ -265,7 +307,7 @@ export default function Perfil() {
                 />
               </InputRow>
               <span style={{ fontSize: "12px", color: "#a0aec0" }}>
-                Nome, CPF, data de nascimento e e-mail não são editáveis por aqui.
+                CPF, data de nascimento e e-mail não são editáveis por aqui.
               </span>
             </InputsGroup>
           </FormGrid>

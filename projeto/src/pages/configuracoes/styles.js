@@ -6,7 +6,14 @@ export const MainContainer = styled.div`
   min-height: 100vh;
 `;
 
-export const ContentArea = styled.div` flex: 1; `;
+export const ContentArea = styled.div`
+  flex: 1;
+  min-width: 0;
+
+  @media (max-width: 900px) {
+    padding-top: 70px;
+  }
+`;
 
 export const Banner = styled.div`
   height: 220px;
@@ -17,7 +24,13 @@ export const Banner = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  h1 { color: white; font-size: 2.2rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+  padding: 0 20px;
+  h1 { color: white; font-size: 2.2rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; text-align: center; }
+
+  @media (max-width: 600px) {
+    height: 160px;
+    h1 { font-size: 1.4rem; }
+  }
 `;
 
 export const SettingsGrid = styled.div`
@@ -27,6 +40,10 @@ export const SettingsGrid = styled.div`
   grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
   gap: 25px;
   padding: 0 20px;
+
+  @media (max-width: 560px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 export const SettingCard = styled.div`
@@ -57,6 +74,7 @@ export const SettingCard = styled.div`
       border-radius: 8px;
       margin-bottom: 15px;
       background: #f8fafc;
+      width: 100%;
     }
   }
 
@@ -64,6 +82,7 @@ export const SettingCard = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 12px;
     padding: 15px 0;
     border-bottom: 1px solid #f1f5f9;
     strong { font-size: 0.95rem; color: #1e293b; }
@@ -87,12 +106,21 @@ export const SettingCard = styled.div`
     }
     .outline-btn { background: white; border: 1px solid #cbd5e1; color: #475569; }
     .danger-btn { background: #fff1f2; border: 1px solid #fecdd3; color: #e11d48; }
+
+    @media (max-width: 420px) {
+      flex-direction: column;
+    }
+  }
+
+  @media (max-width: 480px) {
+    padding: 22px;
   }
 `;
 
 export const ToggleSwitch = styled.div`
   width: 50px;
   height: 26px;
+  flex-shrink: 0;
   background: ${props => props.active ? '#ff6600' : '#cbd5e1'};
   border-radius: 13px;
   position: relative;

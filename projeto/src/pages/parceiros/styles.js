@@ -7,7 +7,12 @@ export const MainLayout = styled.div`
 
 export const Container = styled.div`
   flex: 1;
+  min-width: 0;
   min-height: 100vh;
+
+  @media (max-width: 900px) {
+    padding-top: 70px;
+  }
 `;
 
 export const Banner = styled.div`
@@ -20,10 +25,19 @@ export const Banner = styled.div`
   align-items: center;
   justify-content: center;
   text-align: center;
+  padding: 0 20px;
 
   .overlay {
     h1 { color: white; font-size: 2.8rem; font-weight: 800; letter-spacing: -1px; }
     p { color: #cbd5e1; font-size: 1.1rem; margin-top: 10px; }
+  }
+
+  @media (max-width: 600px) {
+    height: 220px;
+    .overlay {
+      h1 { font-size: 1.7rem; }
+      p { font-size: 0.9rem; }
+    }
   }
 `;
 
@@ -31,6 +45,10 @@ export const Content = styled.div`
   max-width: 1200px;
   margin: -60px auto 50px;
   padding: 0 20px;
+
+  @media (max-width: 600px) {
+    margin-top: -30px;
+  }
 `;
 
 export const Badge = styled.span`
@@ -47,7 +65,7 @@ export const Badge = styled.span`
 
 export const InfoGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 25px;
   margin-bottom: 40px;
 `;
@@ -76,6 +94,10 @@ export const InfoCard = styled.div`
 
   h3 { color: #0f172a; font-size: 1.3rem; margin-bottom: 12px; }
   p { color: #64748b; line-height: 1.7; font-size: 0.95rem; }
+
+  @media (max-width: 480px) {
+    padding: 30px 22px;
+  }
 `;
 
 export const ActionSection = styled.section`
@@ -83,6 +105,11 @@ export const ActionSection = styled.section`
   border-radius: 20px;
   padding: 50px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+
+  @media (max-width: 600px) {
+    padding: 28px 20px;
+    border-radius: 14px;
+  }
 `;
 
 export const SectionHeader = styled.div`
@@ -90,6 +117,11 @@ export const SectionHeader = styled.div`
   margin-bottom: 40px;
   h2 { font-size: 2rem; color: #001858; margin: 10px 0; }
   p { color: #64748b; font-size: 1.1rem; }
+
+  @media (max-width: 600px) {
+    h2 { font-size: 1.4rem; }
+    p { font-size: 0.95rem; }
+  }
 `;
 
 export const PartnerForm = styled.form`
@@ -102,7 +134,7 @@ export const PartnerForm = styled.form`
     label { font-size: 0.85rem; font-weight: 700; color: #1e293b; margin-bottom: 8px; }
     input { 
       padding: 15px; border-radius: 10px; border: 2px solid #f1f5f9; 
-      background: #f8fafc; font-size: 1rem;
+      background: #f8fafc; font-size: 1rem; width: 100%;
       &:focus { border-color: #ff6600; outline: none; background: white; }
     }
   }
@@ -113,7 +145,7 @@ export const PartnerForm = styled.form`
     label { font-size: 0.85rem; font-weight: 700; color: #1e293b; margin-bottom: 8px; }
     textarea { 
       padding: 15px; border-radius: 10px; border: 2px solid #f1f5f9; 
-      background: #f8fafc; font-size: 1rem; resize: none;
+      background: #f8fafc; font-size: 1rem; resize: none; width: 100%;
       &:focus { border-color: #ff6600; outline: none; background: white; }
     }
   }
@@ -135,6 +167,11 @@ export const PartnerForm = styled.form`
       background: #ff6600;
       box-shadow: 0 10px 20px rgba(255, 102, 0, 0.2);
     }
+  }
+
+  @media (max-width: 700px) {
+    grid-template-columns: 1fr;
+    gap: 20px;
   }
 `;
 export const StatusMessage = styled.div`

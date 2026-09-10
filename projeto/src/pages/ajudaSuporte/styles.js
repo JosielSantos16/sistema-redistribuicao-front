@@ -8,6 +8,11 @@ export const MainContainer = styled.div`
 
 export const ContentArea = styled.div`
   flex: 1;
+  min-width: 0;
+
+  @media (max-width: 900px) {
+    padding-top: 70px;
+  }
 `;
 
 export const Banner = styled.div`
@@ -19,8 +24,14 @@ export const Banner = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0 20px;
   
-  h1 { color: white; font-size: 2.2rem; }
+  h1 { color: white; font-size: 2.2rem; text-align: center; }
+
+  @media (max-width: 600px) {
+    height: 150px;
+    h1 { font-size: 1.4rem; }
+  }
 `;
 
 export const SupportCard = styled.div`
@@ -32,6 +43,14 @@ export const SupportCard = styled.div`
   box-shadow: 0 4px 20px rgba(0,0,0,0.05);
 
   h2 { margin-bottom: 30px; color: #1e293b; font-size: 1.5rem; }
+
+  @media (max-width: 700px) {
+    margin: 24px 16px;
+    padding: 24px 20px;
+    border-radius: 14px;
+
+    h2 { font-size: 1.25rem; margin-bottom: 20px; }
+  }
 `;
 
 export const ContactGrid = styled.div`
@@ -54,6 +73,11 @@ export const ContactForm = styled.form`
       border: 1px solid #e2e8f0;
       border-radius: 5px;
       font-size: 0.9rem;
+      width: 100%;
+    }
+
+    @media (max-width: 480px) {
+      grid-template-columns: 1fr;
     }
   }
 
@@ -78,6 +102,11 @@ export const ContactForm = styled.form`
     font-size: 1.1rem;
     font-weight: bold;
     cursor: pointer;
+    width: 100%;
+  }
+
+  @media (min-width: 481px) {
+    button { width: auto; }
   }
 `;
 
@@ -90,6 +119,10 @@ export const InfoBox = styled.div`
   h3 { font-size: 1rem; margin-bottom: 20px; }
   p { font-size: 0.95rem; color: #64748b; }
   strong { color: #1e293b; }
+
+  @media (max-width: 480px) {
+    padding: 20px;
+  }
 `;
 export const StatusMessage = styled.div`
   padding: 12px 16px;
