@@ -8,12 +8,13 @@ export const Container = styled.aside`
   flex-direction: column;
   padding: 70px 0 0 0; 
   height: 100vh; 
+  align-self: flex-start;
   box-sizing: border-box;
   position: sticky;
   top: 0;
   z-index: 100;
   font-family: var(--fonte-corpo, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif);
-
+  
   @media (max-width: 900px) {
     position: fixed;
     left: 0;
