@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Mail, Lock } from "lucide-react";
-import axios from "axios";
+import api from "../../services/api";
 import Logo from "../../components/logo/Logo";
 import {
   LoginWrapper,
@@ -31,7 +31,7 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:3001/sessions', {
+      const response = await api.post('/sessions', {
         email: email, 
         password: senha, 
       });
@@ -47,7 +47,7 @@ export default function Login() {
       localStorage.setItem('@Wolf:token', token);
       localStorage.setItem('@Wolf:user', JSON.stringify(user));
 
-      axios.defaults.headers.Authorization = `Bearer ${token}`;
+      api.defaults.headers.Authorization = `Bearer ${token}`;
 
       alert(`Bem-vindo, ${user.name}!`);
       
@@ -58,7 +58,7 @@ export default function Login() {
       }
 
     } catch (err) {
-      const errorMsg = err.response?.data?.error || "Erro ao conectar com o servidor (Porta 3001)";
+      const errorMsg = err.response?.data?.error || "Erro ao conectar com o servidor.";
       alert(errorMsg);
     } finally {
       setLoading(false);

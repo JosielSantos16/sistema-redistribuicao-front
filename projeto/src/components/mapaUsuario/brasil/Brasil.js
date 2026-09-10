@@ -35,10 +35,6 @@ const StyledSvg = styled.svg`
   }
 `;
 
-// contagens: objeto { SIGLA_UF: total_interessados }, vindo de dados reais do backend.
-// Em vez de decorar coordenadas x/y na mão para os 27 estados, calculamos a
-// posição de cada marcador automaticamente a partir do centro geométrico
-// (getBBox) do próprio <path> do estado, depois que o SVG é montado no DOM.
 const Brasil = ({ onEstadoClick, contagens = {} }) => {
   const svgRef = useRef(null);
   const [centros, setCentros] = useState({});
@@ -56,7 +52,6 @@ const Brasil = ({ onEstadoClick, contagens = {} }) => {
           y: bbox.y + bbox.height / 2,
         };
       } catch {
-        // getBBox pode falhar em navegadores/ambientes sem renderização real
       }
     });
     setCentros(novosCentros);
