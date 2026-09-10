@@ -2,10 +2,12 @@ import styled from "styled-components";
 
 export const MapContainer = styled.div`
   flex: 1;
+  min-width: 0; /* Permite redimensionar em telas menores */
   display: flex;
   justify-content: center;
   align-items: center;
   position: relative;
+  overflow: hidden; /* ✅ Corta o pseudo-elemento que excede os limites */
 
   &::before {
     content: '';
