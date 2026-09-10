@@ -8,7 +8,6 @@ export const Container = styled.aside`
   flex-direction: column;
   padding: 70px 0 0 0; 
   height: 100vh; 
-  overflow-y: auto;
   box-sizing: border-box;
   position: sticky;
   top: 0;
@@ -19,6 +18,7 @@ export const Container = styled.aside`
     position: fixed;
     left: 0;
     padding-top: 90px;
+    overflow-y: auto;
     transform: translateX(${props => props.aberto ? '0' : '-100%'});
     transition: transform 0.25s ease;
     box-shadow: ${props => props.aberto ? '4px 0 24px rgba(0, 0, 0, 0.25)' : 'none'};
