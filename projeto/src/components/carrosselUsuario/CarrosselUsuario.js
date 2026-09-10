@@ -15,10 +15,6 @@ import {
 } from "./styles";
 import { Handshake } from "lucide-react";
 
-// Fotos de retrato profissional (randomuser.me é um serviço público feito
-// especificamente para avatares de exemplo/mockup — não são fotos de
-// usuários reais do sistema, só ilustração).
-
 const mockUsers = [
   {
     id: 1,
