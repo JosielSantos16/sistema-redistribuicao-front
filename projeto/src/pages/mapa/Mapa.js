@@ -3,6 +3,7 @@ import {
   Container,
   Main,
   ContentRow,
+  TextWrapper,
 } from "./styles";
 import InfoSection from "../../components/mapaUsuario/InfoSection/InfoSection";
 import MapaContainer from "../../components/mapaUsuario/mapaContainer/MapaContainter";
@@ -14,10 +15,13 @@ export default function Mapa() {
       <Sidebar />
       <Main>
         <ContentRow>
-          <InfoSection/>
-          <MapaContainer/>
+          <TextWrapper>
+            <InfoSection section="intro" style={{ order: 0 }} />
+            <InfoSection section="legend" style={{ order: 2 }} />
+          </TextWrapper>
+          <MapaContainer />
         </ContentRow>
-        <StartsGrid/>
+        <StartsGrid />
       </Main>
     </Container>
   );

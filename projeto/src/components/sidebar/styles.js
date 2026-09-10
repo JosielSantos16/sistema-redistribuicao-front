@@ -8,17 +8,13 @@ export const Container = styled.aside`
   flex-direction: column;
   padding: 70px 0 0 0; 
   height: 100vh; 
+  overflow-y: auto;
   box-sizing: border-box;
   position: sticky;
   top: 0;
   z-index: 100;
-  /* Fixando a fonte aqui — antes o menu herdava a fonte de qualquer página
-     que o estivesse usando, então ele mudava de aparência ao navegar entre
-     telas que ainda não tinham a mesma configuração de fonte. */
   font-family: var(--fonte-corpo, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif);
 
-  /* No mobile, o menu de 275px fixo não cabe — ele passa a viver fora da
-     tela (translateX) e só entra quando aberto pelo botão hambúrguer. */
   @media (max-width: 900px) {
     position: fixed;
     left: 0;
@@ -29,7 +25,6 @@ export const Container = styled.aside`
   }
 `;
 
-// Botão hambúrguer fixo no topo — só aparece em telas pequenas
 export const MenuButton = styled.button`
   display: none;
   position: fixed;
@@ -52,7 +47,6 @@ export const MenuButton = styled.button`
   }
 `;
 
-// Fundo escurecido que aparece atrás do menu quando aberto no mobile
 export const Overlay = styled.div`
   position: fixed;
   inset: 0;
@@ -69,6 +63,7 @@ export const UserProfile = styled.div`
   flex-direction: column;
   align-items: center;
   margin-bottom: 30px;
+  flex-shrink: 0;
 
   .avatar-wrapper {
     position: relative;
@@ -135,6 +130,7 @@ export const NavItem = styled.div`
   transition: 0.2s;
   margin: 4px 15px;    
   border-radius: 8px;   
+  flex-shrink: 0;
   background-color: ${props => props.active ? '#FF6600' : 'transparent'};
   color: ${props => props.active ? '#fff' : '#cbd5e0'};
 
@@ -174,8 +170,6 @@ export const NavItem = styled.div`
   }
 `;
 
-// Bolinha numérica sobre o ícone de Notificações, indicando quantas
-// solicitações de match pendentes você tem.
 export const Badge = styled.span`
   position: absolute;
   top: -6px;
@@ -203,6 +197,7 @@ export const LogoutArea = styled.div`
   font-size: 14px;
   cursor: pointer;
   color: white; 
+  flex-shrink: 0;
 
   svg { 
     margin-right: 15px; 

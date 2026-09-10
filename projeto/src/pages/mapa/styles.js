@@ -21,8 +21,6 @@ export const Main = styled.main`
   }
 
   @media (max-width: 900px) {
-    /* padding-top maior aqui pra não ficar embaixo do botão hambúrguer
-       fixo (MenuButton do Sidebar) quando a tela empilha. */
     padding: 90px 24px 24px;
   }
 
@@ -44,5 +42,17 @@ export const ContentRow = styled.div`
     align-items: stretch;
     gap: 32px;
     margin-top: 0;
+  }
+`;
+
+export const TextWrapper = styled.div`
+  flex: 0 1 620px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  @media (max-width: 900px) {
+    display: contents;
   }
 `;
