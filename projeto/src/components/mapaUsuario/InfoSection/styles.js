@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 export const Div = styled.div`
-  flex: 0 1 620px;
+  flex: ${props => (!props.$section || props.$section === 'full') ? '0 1 620px' : '0 1 auto'};
   min-width: 0;
   display: flex;
   flex-direction: column;
@@ -114,6 +114,7 @@ export const LegendGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
+  margin-top: 16px;
   margin-bottom: 8px;
   width: 100%;
 
