@@ -15,7 +15,8 @@ export default function InfoSection({ isHome, section = "full", style }) {
   const navigate = useNavigate();
 
   const mostrarIntro = section === "full" || section === "intro";
-  const mostrarAcoes = section === "full" || section === "actions";
+  const mostrarLegenda = section === "full" || section === "actions" || section === "legend";
+  const mostrarBotoes = section === "full" || section === "actions" || section === "buttons";
 
   return (
     <Div style={style} $section={section}>
@@ -36,49 +37,47 @@ export default function InfoSection({ isHome, section = "full", style }) {
         </>
       )}
 
-      {mostrarAcoes && (
-        <>
-          <LegendGrid>
-            <LegendItem>
-              <IconChip>
-                <MapPin size={18} strokeWidth={2.2} />
-              </IconChip>
-              <span>Cada estado pode exibir um marcador</span>
-            </LegendItem>
+      {mostrarLegenda && (
+        <LegendGrid>
+          <LegendItem>
+            <IconChip>
+              <MapPin size={18} strokeWidth={2.2} />
+            </IconChip>
+            <span>Cada estado pode exibir um marcador</span>
+          </LegendItem>
 
-            <LegendItem>
-              <IconChip tone="orange">
-                <strong>20</strong>
-              </IconChip>
-              <span>O número no marcador representa o total de interessados</span>
-            </LegendItem>
+          <LegendItem>
+            <IconChip tone="orange">
+              <strong>20</strong>
+            </IconChip>
+            <span>O número no marcador representa o total de interessados</span>
+          </LegendItem>
 
-            <LegendItem>
-              <IconChip>
-                <MousePointerClick size={18} strokeWidth={2.2} />
-              </IconChip>
-              <span>Clique em um estado para visualizar os perfis</span>
-            </LegendItem>
+          <LegendItem>
+            <IconChip>
+              <MousePointerClick size={18} strokeWidth={2.2} />
+            </IconChip>
+            <span>Clique em um estado para visualizar os perfis</span>
+          </LegendItem>
 
-            <LegendItem>
-              <IconChip tone="orange">
-                <Info size={18} strokeWidth={2.2} />
-              </IconChip>
-              <span>Informações baseadas nas preferências dos usuários</span>
-            </LegendItem>
-          </LegendGrid>
+          <LegendItem>
+            <IconChip tone="orange">
+              <Info size={18} strokeWidth={2.2} />
+            </IconChip>
+            <span>Informações baseadas nas preferências dos usuários</span>
+          </LegendItem>
+        </LegendGrid>
+      )}
 
-          {isHome && (
-            <ButtonRow>
-              <Button variant="orange" onClick={() => navigate("/cadastro")}>
-                Cadastrar
-              </Button>
-              <Button variant="blue" onClick={() => navigate("/login")}>
-                Entrar
-              </Button>
-            </ButtonRow>
-          )}
-        </>
+      {mostrarBotoes && isHome && (
+        <ButtonRow>
+          <Button variant="orange" onClick={() => navigate("/cadastro")}>
+            Cadastrar
+          </Button>
+          <Button variant="blue" onClick={() => navigate("/login")}>
+            Entrar
+          </Button>
+        </ButtonRow>
       )}
     </Div>
   );

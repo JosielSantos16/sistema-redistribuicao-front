@@ -27,12 +27,19 @@ export const Div = styled.div`
   }
 
   @media (max-width: 900px) {
-    h1 { font-size: 38px; }
-    p { font-size: 16px; max-width: 100%; }
+    h1 { 
+      font-size: 32px; 
+      margin-bottom: 16px;
+    }
+    p { 
+      font-size: 16px; 
+      max-width: 100%; 
+      margin-bottom: 24px;
+    }
   }
 
   @media (max-width: 420px) {
-    h1 { font-size: 30px; }
+    h1 { font-size: 28px; }
   }
 `;
 
@@ -63,8 +70,14 @@ export const WelcomeBadge = styled.span`
 export const ButtonRow = styled.div`
   display: flex;
   gap: 16px;
-  margin-top: 8px;
+  margin-top: 16px;
   flex-wrap: wrap;
+  width: 100%;
+
+  @media (max-width: 900px) {
+    flex-direction: column; /* Empilha os botões no mobile */
+    gap: 12px;
+  }
 `;
 
 export const Button = styled.button`
@@ -81,10 +94,17 @@ export const Button = styled.button`
     ? '0 6px 18px rgba(255, 102, 0, 0.28)'
     : '0 6px 18px rgba(0, 24, 88, 0.22)'};
   transition: all 0.2s ease;
+  width: auto;
 
   &:hover {
     filter: brightness(1.12);
     transform: translateY(-2px);
+  }
+
+  @media (max-width: 900px) {
+    width: 100%; /* Botão ocupa 100% da largura na tela do celular */
+    text-align: center;
+    padding: 16px 20px;
   }
 `;
 
@@ -93,6 +113,11 @@ export const LegendGrid = styled.div`
   grid-template-columns: 1fr 1fr;
   gap: 16px;
   margin-bottom: 8px;
+  width: 100%;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr; /* Legenda em 1 coluna em telas pequenas */
+  }
 `;
 
 export const LegendItem = styled.div`

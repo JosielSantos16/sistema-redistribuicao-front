@@ -10,8 +10,9 @@ export default function Home() {
       <Main>
         <HeroRow>
           <TextWrapper>
-            <InfoSection isHome section="intro" />
-            <InfoSection isHome section="actions" />
+            <InfoSection isHome section="intro" style={{ order: 0 }} />
+            <InfoSection isHome section="buttons" style={{ order: 2 }} />
+            <InfoSection isHome section="legend" style={{ order: 3 }} />
           </TextWrapper>
           <MapaContainer isHome />
         </HeroRow>

@@ -4,30 +4,20 @@ export const Container = styled.div`
   display: flex;
   min-height: 100vh;
   width: 100%;
-  max-width: 100vw;
-  background-color: #F5FAFF;
-  font-family: var(--fonte-corpo);
+  max-width: 100%;
+  background-color: #f4f7f9;
   overflow-x: hidden;
 `;
 
 export const Main = styled.main`
   flex: 1;
-  min-width: 0;
-  padding: 56px 88px; 
-  display: flex;
-  flex-direction: column;
+  padding: 40px 60px;
   overflow-y: auto;
+  overflow-x: hidden;
+  width: 100%;
 
-  @media (max-width: 1100px) {
-    padding: 40px 48px;
-  }
-
-  @media (max-width: 700px) {
-    padding: 90px 20px 40px;
-  }
-
-  @media (max-width: 420px) {
-    padding: 84px 16px 32px;
+  @media (max-width: 900px) {
+    padding: 24px 20px;
   }
 `;
 
@@ -54,6 +44,6 @@ export const TextWrapper = styled.div`
   gap: 8px;
 
   @media (max-width: 900px) {
-    flex-basis: auto;
+    display: contents;
   }
 `;
