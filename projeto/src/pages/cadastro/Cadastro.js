@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { User, IdCard, Mail, Calendar as CalendarIcon } from "lucide-react";
+import { User, IdCard, Mail, Calendar as CalendarIcon, Lock } from "lucide-react";
 import * as Yup from "yup";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -50,6 +50,8 @@ export default function Cadastro() {
   const [email, setEmail] = useState("");
   const [cpf, setCpf] = useState("");
   const [dataNascimento, setDataNascimento] = useState(null);
+  const [senha, setSenha] = useState("");
+  const [confirmarSenha, setConfirmarSenha] = useState("");
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
@@ -99,6 +101,13 @@ export default function Cadastro() {
 
           return age >= 18 && age <= 100;
         }),
+      senha: Yup.string()
+        .required("A senha é obrigatória")
+        .min(8, "A senha deve ter no mínimo 8 caracteres")
+        .matches(/^(?=.*[A-Za-z])(?=.*\d).+$/, "A senha deve conter letras e números"),
+      confirmarSenha: Yup.string()
+        .required("Confirme sua senha")
+        .oneOf([Yup.ref("senha")], "As senhas não coincidem"),
       acceptedTerms: Yup.boolean().oneOf(
         [true],
         "Aceite os termos para continuar",
@@ -109,20 +118,22 @@ export default function Cadastro() {
       setLoading(true);
 
       await schema.validate(
-        { name, email, cpf, data_nascimento: dataNascimento, acceptedTerms },
+        { name, email, cpf, data_nascimento: dataNascimento, senha, confirmarSenha, acceptedTerms },
         { abortEarly: false },
       );
 
       const cleanCpf = cpf.replace(/\D/g, "");
 
-      await api.post("/users", {
+      const { data } = await api.post("/users", {
         name,
         email,
         cpf: cleanCpf,
         data_nascimento: dataNascimento,
+        password: senha,
       });
-
-      navigate("/verificar-email", { state: { email } });
+      
+      localStorage.setItem("@Wolf:token", data.token);
+      navigate("/completar-perfil");
     } catch (err) {
       if (err instanceof Yup.ValidationError) {
         const validationErrors = {};
@@ -133,7 +144,7 @@ export default function Cadastro() {
         setErrors(validationErrors);
       } else {
         const errorMsg = err.response?.data?.error || "Erro no servidor.";
-        alert(errorMsg);
+        alert(Array.isArray(errorMsg) ? errorMsg.join(" ") : errorMsg);
       }
     } finally {
       setLoading(false);
@@ -228,6 +239,44 @@ export default function Cadastro() {
             {errors.data_nascimento && (
               <ErrorMessage>{errors.data_nascimento}</ErrorMessage>
             )}
+          </InputGroup>
+
+          <InputGroup>
+            <InputWrapper>
+              <IconWrapper hasError={!!errors.senha}>
+                <Lock size={18} />
+              </IconWrapper>
+              <Input
+                type="password"
+                placeholder="Senha (mín. 8 caracteres, letras e números)"
+                value={senha}
+                hasError={!!errors.senha}
+                onChange={(e) => {
+                  setSenha(e.target.value);
+                  if (errors.senha) setErrors({ ...errors, senha: null });
+                }}
+              />
+            </InputWrapper>
+            {errors.senha && <ErrorMessage>{errors.senha}</ErrorMessage>}
+          </InputGroup>
+
+          <InputGroup>
+            <InputWrapper>
+              <IconWrapper hasError={!!errors.confirmarSenha}>
+                <Lock size={18} />
+              </IconWrapper>
+              <Input
+                type="password"
+                placeholder="Confirmar senha"
+                value={confirmarSenha}
+                hasError={!!errors.confirmarSenha}
+                onChange={(e) => {
+                  setConfirmarSenha(e.target.value);
+                  if (errors.confirmarSenha) setErrors({ ...errors, confirmarSenha: null });
+                }}
+              />
+            </InputWrapper>
+            {errors.confirmarSenha && <ErrorMessage>{errors.confirmarSenha}</ErrorMessage>}
           </InputGroup>
 
           <CheckboxGroup>
