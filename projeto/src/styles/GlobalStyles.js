@@ -20,12 +20,6 @@ const GlobalStyle = createGlobalStyle`
         box-sizing: border-box;
     }
 
-    html, body {
-        overflow-x: hidden;
-        width: 100%;
-        max-width: 100vw;
-    }
-
     body {
         font-family: var(--fonte-corpo);
     }
