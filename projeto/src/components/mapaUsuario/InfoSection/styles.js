@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 export const Div = styled.div`
-  width: 100%;
+  flex: 0 1 620px;
   min-width: 0;
   display: flex;
   flex-direction: column;
@@ -27,6 +27,8 @@ export const Div = styled.div`
   }
 
   @media (max-width: 900px) {
+    flex-basis: auto;
+
     h1 { 
       font-size: 32px; 
       margin-bottom: 16px;
@@ -75,7 +77,7 @@ export const ButtonRow = styled.div`
   width: 100%;
 
   @media (max-width: 900px) {
-    flex-direction: column; /* Empilha os botões no mobile */
+    flex-direction: column;
     gap: 12px;
   }
 `;
@@ -102,7 +104,7 @@ export const Button = styled.button`
   }
 
   @media (max-width: 900px) {
-    width: 100%; /* Botão ocupa 100% da largura na tela do celular */
+    width: 100%;
     text-align: center;
     padding: 16px 20px;
   }
@@ -116,7 +118,7 @@ export const LegendGrid = styled.div`
   width: 100%;
 
   @media (max-width: 600px) {
-    grid-template-columns: 1fr; /* Legenda em 1 coluna em telas pequenas */
+    grid-template-columns: 1fr;
   }
 `;
 
